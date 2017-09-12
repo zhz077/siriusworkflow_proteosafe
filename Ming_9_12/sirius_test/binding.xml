@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<binding>
+    <bind action="begin" type="download">
+        <url value="{livesearch.download}"/>
+        <query name="task" valueRef="@task" />
+        <query name="user" valueRef="@user"/>
+        <compression type="zip" />
+ 		<download port="mgf" type="folder">
+        	<query name="resource" value="mgf"/>
+        </download>
+		<download port="csv" type="folder">
+            <query name="resource" value="csv"/>
+        </download>
+
+        <download port="flowParams" type="file">
+            <query name="resource" value="params"/>
+        </download>
+		<downloadParams>
+			<query name="resource" value="params"/>
+		</downloadParams>
+    </bind>
+
+    <bind action="sirius" tool="sirius">
+		<inputAsRequirement port="mgf"		requirement = "mgf"/>
+		<inputAsRequirement port="csv"		requirement = "csv"/>
+    	<inputAsRequirement port="flowParams"       requirement="flowParams"/>
+		<productionToOutput port="fpt"	    production="fpt"/>
+		<productionToOutput port="summary"		production="summary"/>
+		<productionToOutput port="mf"		production = "mf"/>
+		<productionToOutput	port="dir_zip"	production="dir_zip"/>
+    </bind>
+
+	<bind action = "csvbuilder" tool="csvbuilder">
+		<inputAsRequirement port="mf"		requirement = "mf"/>
+		<inputAsRequirement port="summary"		requirement="summary"/>
+		<productionToOutput port="gnps"		 production="gnps"/>
+		<productionToOutput port="cyto"		 production="cyto"/>
+	</bind>
+
+
+    <bind action="end" type="upload">
+        <url value="{livesearch.upload}"/>
+        <query name="task" valueRef="@task"/>
+        <contentQuery name="content"/>
+		<compression type="zip" />
+		<upload port="summary" type="folder">
+            <query name="resource" value="summary"/>
+        </upload>
+        <upload port="fpt" type="folder">
+            <query name="resource" value="fpt"/>
+        </upload>
+		<upload port="gnps" type="folder">
+            <query name="resource" value="gnps"/>
+        </upload>
+		<upload port="cyto" type="folder">
+            <query name="resource" value="cyto"/>
+        </upload>
+		<upload port="dir_zip" type="folder">
+            <query name="resource" value="dir_zip"/>
+        </upload>
+    </bind>
+</binding>

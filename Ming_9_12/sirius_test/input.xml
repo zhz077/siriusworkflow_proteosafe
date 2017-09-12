@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<interface id="sirius-test" version="1.2.5">
+    <workflow-id>sirius-test</workflow-id>
+    <workflow-label>sirius-test</workflow-label>
+
+    <!-- Parameter declarations -->
+    <parameters>
+        <!-- Universal parameters -->
+        <parameter name="desc" label="Description">
+            <validator type="length" maximum="100"/>
+        </parameter>
+
+		<parameter name="email" label="Email">
+            <validator type="email"/>
+        </parameter>
+
+		<!-- computing option files  -->
+	    <parameter name="mgf" label="Input MGF files">
+            <validator type="required"/>
+            <fileGenerator type="upload" purpose="spectrum" target="mgf"/>
+        </parameter>
+
+
+		<parameter name = "ppm"	label = "PPM Tolerance">
+			<default	value = "10.0"/>
+		</parameter>
+
+        <parameter   name = "Profile_param"     label = "Profile">
+            <options>
+                <option value = "qtof"/>
+                <option value = "orbitrap"/>
+            </options>
+        </parameter>
+
+		<parameter   name = "DataBase"     label = "Database">
+            <options>
+                <option value = "bio"/>
+                <option value ="PubChem"/>
+                <option value ="hmdb"/>
+                <option value ="kegg"/>
+                <option value ="knapsack"/>
+                <option value ="biocyc"/>
+            </options>
+        </parameter>
+
+
+		<parameter name = "tree_number"	label = "Number of fragmentation tree to compute per spectrum">
+			<default	value = "20"/>
+		</parameter>
+
+
+		<parameter name = "precursor"	label = "Maximum precursor to search (m/z)">
+			<default	value = "500.0"/>
+		</parameter>
+
+		<parameter   name = "Ionisation_mode"     label = "Ionisation Mode">
+            <options>
+                <option value = "Positive"/>
+                <option value ="Negative"/>
+            </options>
+        </parameter>
+
+		<parameter name = "adduct"    label = "Adduct Selection">
+            <options>
+                <option value = "ignore MS1 spectrum"/>
+                <option value ="use MS1 information"/>
+            </options>
+        </parameter>
+
+
+		<!-- FingerID option files -->
+        <parameter name = "FingerID_run"    label = "Run CSI:FingerID">
+            <default     value="on"/>
+        </parameter>
+
+		<parameter   name = "DataBase_FingerID"     label = "Database for CSI:FingerID">
+            <options>
+                <option value = "bio"/>
+                <option value ="PubChem"/>
+                <option value ="hmdb"/>
+                <option value ="kegg"/>
+                <option value ="knapsack"/>
+                <option value ="biocyc"/>
+            </options>
+        </parameter>
+
+		<parameter name="csv" label="Spectral Annotation File">
+            <fileGenerator type="upload" purpose="spectrum"  target="csv"/>
+    	</parameter>
+
+
+		<parameter name = "spectral_annotation"    label = "Use MS/MS spectral annotation">
+            <default     value="off"/>
+        </parameter>
+
+	</parameters>
+
+    <!-- Input form layout -->
+	<!-- computing -->
+    <block label="Computing Options">
+       	<row>
+			<cell><label><content parameter="mgf"/></label></cell>
+            <cell>
+                <module id="mgf" type="fileSelector">
+                    <property name="label">Input mgf File</property>
+                </module>
+            </cell>
+
+			<cell><label><content parameter = "ppm"/></label></cell>
+			<cell>
+				<input type = "text"	parameter = "ppm">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+			</cell>
+		</row>
+
+		<row>
+            <cell> <label><content parameter="DataBase"/></label> </cell>
+            <cell><input type = "select"         parameter="DataBase"/></cell>
+
+            <cell> <label><content parameter="Ionisation_mode"/></label> </cell>
+            <cell><input type = "select"         parameter="Ionisation_mode"/></cell>
+        </row>
+
+		<row>
+			<cell><label><content parameter = "tree_number"/></label></cell>
+			<cell>
+				<input type = "text"	parameter = "tree_number">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+			</cell>
+
+			<cell><label><content parameter ="precursor"/></label></cell>
+			<cell>
+				<input type = "text"	parameter = "precursor">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+			</cell>
+		</row>
+		<row>
+
+            <cell> <label><content parameter="adduct"/></label> </cell>
+            <cell><input type = "select"   parameter="adduct"/></cell>
+
+
+            <cell><label><content parameter="Profile_param"/></label></cell>
+            <cell><input type = "select"  parameter="Profile_param"/></cell>
+        </row>
+
+    </block>
+
+
+
+	<!--Finger ID options -->
+
+	<block label="CSI:FingerID Options">
+        <row>
+            <cell>
+                <input  type="checkbox" parameter="FingerID_run"/>
+                <label><content parameter = "FingerID_run"/></label>
+            </cell>
+
+            <cell>
+                <label><content parameter="DataBase_FingerID"/></label>
+            </cell>
+
+			<cell>
+                <input type = "select"  parameter="DataBase_FingerID"/>
+            </cell>
+        </row>
+
+		<row>
+            <cell>
+                <input  type="checkbox" parameter="spectral_annotation"/>
+                <label><content parameter = "spectral_annotation"/></label>
+            	<content parameter="csv"/>
+                <module id="csv" type="fileSelector">
+					<property name="label">Spectral Annotation Files</property>
+				</module>
+            </cell>
+        </row>
+    </block>
+
+</interface>

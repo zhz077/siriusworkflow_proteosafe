@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<flow name="speclib-add">
+	<collection name="mgf"/>
+	<collection name="csv"/>
+	<object     name="workflowParameters"/>
+	<collection   name="summary"/>
+	<collection		name = "fpt"/>
+	<collection 	name="gnps"/>
+	<collection 	name = "cyto"/>
+	<collection 	name = "mf"/>
+`	<collection 	name="dir_zip"/>
+
+	<action name="begin">
+		<output port="mgf"       collection="mgf"/>
+		<output port="csv"       collection="csv"/>
+		<output port="flowParams" object="workflowParameters"/>
+
+	</action>
+	
+	<action name="sirius">
+		<input  port="mgf"             collection="mgf"/>
+		<input  port="csv"             collection="csv"/>
+		<input  port="flowParams"      object="workflowParameters"/>
+		<output  port="fpt"		   collection="fpt"/>
+		<output  port="summary"	   collection="summary"/>
+		<output port="mf"		collection="mf"/>
+		<output port="dir_zip"	collection="dir_zip"/>
+	</action>
+
+	<action name="csvbuilder">
+		<input port="mf"		collection="mf"/>
+		<input port = "summary"		collection = "summary"/>
+		<output port = "gnps"		collection = "gnps"/>
+		<output port  = "cyto"	collection = "cyto"/>
+	</action>
+
+	<action name="end">
+		<input port="summary"		 collection="summary"/>
+		<input port="fpt"		  collection="fpt"/>
+		<input port = "gnps"		collection= "gnps"/>
+		<input port = "cyto"	collection = "cyto"/>
+		<input port ="dir_zip"	collection="dir_zip"/>
+	</action>
+</flow>
