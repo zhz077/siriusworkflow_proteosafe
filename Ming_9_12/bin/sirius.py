@@ -4,6 +4,7 @@ import os
 import argparse
 import tempfile
 import ming_proteosafe_library
+import subprocess
 #import xml.etree.ElementTree as ET
 
 def transFiles(infolder,extension,outfolder):
@@ -27,6 +28,7 @@ def main():
     parser.add_argument('summary', help='summary')
     parser.add_argument('mf_folder', help='mf_folder')
     parser.add_argument('dir_zip', help='dir_zip')
+    parser.add_argument('log', help='log')
     parser.add_argument('sirius_jar', help='sirius_jar')
     parser.add_argument('gurobi_path', help='gurobi_path')
     parser.add_argument('canopus_path', help='canopus_path')
@@ -37,7 +39,7 @@ def main():
     p_mf = args.mf_folder
     p_mgf = os.path.abspath(args.input_mgf_file)
     p_c = args.canopus_path
-    p_out = p_mgf.split(p_mgf.split("/")[-1])[0]
+    p_out = p_mgf.split(p_mgf.split("/")[-2])[0]
     p_out_sirius = p_out+"sirius"
     p_out_fingerid = p_out+"fingerid"
     p_out_zodiac = p_out+"zodiac"
@@ -46,8 +48,10 @@ def main():
     p_csv_folder = os.path.abspath(args.input_csv_file)
     dir_zip = args.dir_zip
     summary = args.summary
+    log = args.log
 
-
+    #start the log file
+    fLog = open(log,"w")
     empty_exp = True
     for root,dirs,files in os.walk(p_csv_folder):
         if len(files) == 1:
@@ -55,7 +59,7 @@ def main():
             for name in files:
                 p_csv = os.path.join(root,name)
 
-
+    
 
 
     #Match the parameters
@@ -146,62 +150,93 @@ def main():
     execute_script_file.write(cmd + "\n")
 
 
-
     # step1
     cmd = "%s -p %s --isotope score --ppm-max %s --candidates %s --maxmz %s --database %s --beautifytrees --%s --%s -o %s %s" % (p_sirius, profile, ppm,tree_number, precursor,DB,adduct,i_mode,p_out_sirius, p_mgf)
     execute_script_file.write(cmd + "\n")
 
     #step 2
     if annot and not empty_exp:
-        cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter 0.96  --output %s --processors 16 --specra %s" %(p_sirius,p_out_sirius,p_csv,p_out_zodiac,p_mgf)
+        cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter 0.96 --output %s --processors 16 --spectra %s" %(p_sirius,p_out_sirius,p_csv,p_out_zodiac,p_mgf)
         execute_script_file.write(cmd + "\n")
     else:
         cmd = "%s --zodiac --sirius %s --thresholdfilter 0.96  --output %s --processors 16 --spectra %s" %(p_sirius,p_out_sirius,p_out_zodiac,p_mgf)
         execute_script_file.write(cmd + "\n")
 
-    print(cmd)
     #step3:
     if runFID:
         cmd = "%s --fingerid --fingerid-db %s --experimental-canopus=%s -o %s %s" %(p_sirius,FID_DB,p_c,p_out_fingerid,p_out_zodiac)
         execute_script_file.write(cmd + "\n")
 
-    #zip the output to one dir_zip
-    cmd ="zip -r %s sirius"%(os.path.join(dir_zip,"sirius.zip"))
-    execute_script_file.write(cmd + "\n")
-    cmd ="zip -r %s zodiac"%(os.path.join(dir_zip,"zodiac.zip"))
-    execute_script_file.write(cmd + "\n")
-    cmd ="zip -r %s fingerid"%(os.path.join(dir_zip,"fingerid.zip"))
-    execute_script_file.write(cmd + "\n")
-
     #execution
     execute_script_file.close()
     cmd = "sh %s" % (execute_script_file.name)
-    #print(execute_script_file.name)
-    os.system(cmd)
-    os.unlink(execute_script_file.name)
+    #os.system(cmd)
+    #os.unlink(execute_script_file.name)
+    err = subprocess.run(['sh',execute_script_file.name],stderr=subprocess.PIPE)
+    stderror = err.stderr.decode(sys.stderr.encoding)
+    if stderror != None:
+        fLog.write("Sirius process has errors and/or warnings. Please see the following message.\n")
+        fLog.write(stderror)
+        fLog.write('\n')
+
+
+
+
+
+    #zip the output to one dir_zip
+    runSirius=False
+    run_FID = False
+    runZodiac=False
+    
+    cmd ="zip -r %s sirius"%(os.path.join(dir_zip,"sirius.zip"))
+    try:
+        subprocess.check_output(["zip","-r",os.path.join(dir_zip,"sirius.zip"),"sirius"])
+        os.system(cmd)
+        runSirius = True
+    except subprocess.CalledProcessError as e:
+        fLog.write("step 1 (sirius computation) did not proceed successfully. \n")
+    cmd ="zip -r %s zodiac"%(os.path.join(dir_zip,"zodiac.zip"))
+    try:
+        subprocess.check_output(["zip","-r",os.path.join(dir_zip,"zodiac.zip"),"zodiac"])
+        os.system(cmd)
+        runZodiac = True
+    except subprocess.CalledProcessError as e:
+        fLog.write("step 2 (zodiac computation) did not proceed successfully and there won't be zodiac summary file. \n")
+    if runFID:
+        cmd ="zip -r %s fingerid"%(os.path.join(dir_zip,"fingerid.zip"))
+        try: 
+            subprocess.check_output(["zip","-r",os.path.join(dir_zip,"fingerid.zip"),"fingerid"])
+            os.system(cmd)
+            run_FID = True
+        except subprocess.CalledProcessError as e:
+            fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be finger id summary file. \n")
+		
+	
 
 
     #try to find all the ftp files and label them with feature ids
     extension='.fpt'
     ex_mf = '.csv'
-    for root, dirs, files in os.walk(p_out_fingerid):
-        for name in files:
-            if os.path.splitext(name)[-1] == extension:
-                filepath = os.path.join(root, name)
-                sendpathset = str(filepath).split("/")
-                sendpath = sendpathset[-3].split("_")[-1]
-                fullname = sendpathset[-1]
-                sendpath = fpt_folder+"/"+sendpath+"_"+fullname
-                cmd = "cp %s %s" %(filepath,sendpath)
-                os.system(cmd)
-            if os.path.splitext(name)[-1] == ex_mf:
-                filepath = os.path.join(root, name)
-                cmd = "cp %s %s" %(filepath,p_mf)
-                os.system(cmd)
-
-
-    transFiles(p_out_zodiac,'zodiac_summary.csv',summary)
-    transFiles(p_out_fingerid,'summary_csi_fingerid.csv',summary)
+    if run_FID:
+        for root, dirs, files in os.walk(p_out_fingerid):
+            for name in files:
+                if os.path.splitext(name)[-1] == extension:
+                    filepath = os.path.join(root, name)
+                    sendpathset = str(filepath).split("/")
+                    sendpath = sendpathset[-3].split("_")[-1]
+                    fullname = sendpathset[-1]
+                    sendpath = fpt_folder+"/"+sendpath+"_"+fullname
+                    cmd = "cp %s %s" %(filepath,sendpath)
+                    os.system(cmd)
+                if os.path.splitext(name)[-1] == ex_mf:
+                    filepath = os.path.join(root, name)
+                    cmd = "cp %s %s" %(filepath,p_mf)
+                    os.system(cmd)
+    if runZodiac:
+        transFiles(p_out_zodiac,'zodiac_summary.csv',summary)
+    if run_FID:
+        transFiles(p_out_fingerid,'summary_csi_fingerid.csv',summary)
+    fLog.close()
 
 
 

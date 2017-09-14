@@ -7,6 +7,7 @@
 		<source type="folder" name="gnps/"/>
 		<source type="folder" name="cyto/"/>
 		<source type = "folder" name="dir_zip/"/>
+		<source type = "folder" name="log/"/>
 	</download>
 
 	<view id="csv_view" label="Sirius Results View">

@@ -22,7 +22,7 @@ def searchmf(foldername,mf):
 				for row2 in reader2:
 					if counter ==0:
 						counter =counter+1
- 						continue
+						continue
 					if counter ==3:
 						break
 					if smile == '':
@@ -58,7 +58,6 @@ def sepCol(df,col):
 				col_to_write.append(sep[j][i])
 			except:
 				col_to_write.append(None)
-		#df[header] = col_to_write
 		df.insert(df.columns.get_loc(col)+i,header,col_to_write)
 	df = df.drop(col,1)
 	return df
@@ -83,62 +82,73 @@ def main():
 
 	
 	#fill up the field names for zodiac:
-	f = open(p_sum+'/zodiac_summary.csv','r')
-	zodiac = []
-	for line in f:
-		value = line.split('\n')[0].split('\t')
-		zodiac.append(value)
-	f.close()
-	max_col = 0;
-	for i in zodiac:
-		if len(i) > max_col:
-			max_col = len(i)
-	for i in range(max_col-len(zodiac[0])):
-		if i%2 ==0:
-			zodiac[0].append('sirius_MF_%d'%(i+2))
-		else:
-			zodiac[0].append('sirius_score_%d'%(i+1))
+	skip_zodiac= True
+	for root,dirs,files in os.walk(p_sum):
+		for filename in files:
+			if filename == 'zodiac_summary.csv':
+				skip_zodiac = False
+	if not skip_zodiac:
+		f = open(p_sum+'/zodiac_summary.csv','r')
+		zodiac = []
+		for line in f:
+			value = line.split('\n')[0].split('\t')
+			zodiac.append(value)
+		f.close()
+		max_col = 0;
+		for i in zodiac:
+			if len(i) > max_col:
+				max_col = len(i)
+		for i in range(max_col-len(zodiac[0])):
+			if i%2 ==0:
+				zodiac[0].append('sirius_MF_%d'%(int(i/2)+1))
+			else:
+				zodiac[0].append('sirius_score_%d'%(int(i/2)+1))
 
-	with open(p_cy+'/zodiac_summary.csv','w') as result:
-		writer = csv.writer(result,delimiter='\t')
-		writer.writerows(zodiac)
-
-	with open(p_gnps+'/zodiac_summary.csv','w') as result:
-		writer = csv.writer(result,delimiter='\t')
-		writer.writerows(zodiac)
+		with open(p_cy+'/zodiac_summary.csv','w') as result:
+			writer = csv.writer(result,delimiter='\t')
+			writer.writerows(zodiac)
+	
+		with open(p_gnps+'/zodiac_summary.csv','w') as result:
+			writer = csv.writer(result,delimiter='\t')
+			writer.writerows(zodiac)
 
 		
 	#edit cyto folder first
 
-	#removing confusing benchmarks
-	fingerid = pd.read_csv(p_sum+'/summary_csi_fingerid.csv',sep="\t")
-	for name in ['source','inchi']:
-		if name in fingerid.columns:
-			fingerid=fingerid.drop(name,1)
+	#removing confusing benchmark
+	skip_fid= True
+	for root,dirs,files in os.walk(p_sum):
+		for filename in files:
+			if filename == 'summary_csi_fingerid.csv':
+				skip_fid = False
+	if not skip_fid:
+		fingerid = pd.read_csv(p_sum+'/summary_csi_fingerid.csv',sep="\t")
+		for name in ['source','inchi']:
+			if name in fingerid.columns:
+				fingerid=fingerid.drop(name,1)
 	
-	# add the rank2, rank3 strutures to each zodiac mf
-	mf_str= [] 
-	mf_score=[]
-	mf_name=[]
-	for mf in fingerid['molecularFormula']:
-		a = searchmf(p_mf,mf)
-		mf_str.append(a[0])
-		mf_score.append(a[1])
-		mf_name.append(a[2])
-	print mf_str
-	fingerid['smiles'] = mf_str
-	fingerid['score'] = mf_score
-	fingerid['name'] = mf_name
+	    # add the rank2, rank3 strutures to each zodiac mf
+		mf_str= [] 
+		mf_score=[]
+		mf_name=[]
+		for mf in fingerid['molecularFormula']:
+			a = searchmf(p_mf,mf)
+			mf_str.append(a[0])
+			mf_score.append(a[1])
+			mf_name.append(a[2])
+		fingerid['smiles'] = mf_str
+		fingerid['score'] = mf_score
+		fingerid['name'] = mf_name
 
 
-	fingerid.to_csv(p_cy+'/summary_csi_fingerid.csv',sep='\t',index=False)
+		fingerid.to_csv(p_cy+'/summary_csi_fingerid.csv',sep='\t',index=False)
 	
 
-	#edit dataframe into gnps
-	fingerid = sepCol(fingerid,'smiles')
-	fingerid = sepCol(fingerid,'score')
-	fingerid = sepCol(fingerid,'name')
-	fingerid.to_csv(p_gnps+'/summary_csi_fingerid_1.csv',sep='\t',index=False)
+		#edit dataframe into gnps
+		fingerid = sepCol(fingerid,'smiles')
+		fingerid = sepCol(fingerid,'score')
+		fingerid = sepCol(fingerid,'name')
+		fingerid.to_csv(p_gnps+'/summary_csi_fingerid_1.csv',sep='\t',index=False)
 
 	
 

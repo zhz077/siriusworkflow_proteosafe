@@ -23,6 +23,7 @@
 
 		<parameter name = "ppm"	label = "PPM Tolerance">
 			<default	value = "10.0"/>
+			<validator type="float" minimum ="0" maximum="1000"/>
 		</parameter>
 
         <parameter   name = "Profile_param"     label = "Profile">
@@ -46,11 +47,13 @@
 
 		<parameter name = "tree_number"	label = "Number of fragmentation tree to compute per spectrum">
 			<default	value = "20"/>
+			<validator type="integer" minimum="0" maximum="1000"/>
 		</parameter>
 
 
 		<parameter name = "precursor"	label = "Maximum precursor to search (m/z)">
 			<default	value = "500.0"/>
+			<validator type="float" minimum="0" maximum="10000.0"/>
 		</parameter>
 
 		<parameter   name = "Ionisation_mode"     label = "Ionisation Mode">

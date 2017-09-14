@@ -5,10 +5,10 @@
         <query name="task" valueRef="@task" />
         <query name="user" valueRef="@user"/>
         <compression type="zip" />
- 		<download port="mgf" type="folder">
+ 		<download port="mgf" type="file">
         	<query name="resource" value="mgf"/>
         </download>
-		<download port="csv" type="folder">
+		<download port="csv" type="file">
             <query name="resource" value="csv"/>
         </download>
 
@@ -28,6 +28,7 @@
 		<productionToOutput port="summary"		production="summary"/>
 		<productionToOutput port="mf"		production = "mf"/>
 		<productionToOutput	port="dir_zip"	production="dir_zip"/>
+		<productionToOutput	port="log"	production="log"/>
     </bind>
 
 	<bind action = "csvbuilder" tool="csvbuilder">
@@ -57,6 +58,9 @@
         </upload>
 		<upload port="dir_zip" type="folder">
             <query name="resource" value="dir_zip"/>
+        </upload>
+		<upload port="log" type="file">
+            <query name="resource" value="log"/>
         </upload>
     </bind>
 </binding>
