@@ -45,19 +45,23 @@ def main():
     p_out_zodiac = p_out+"zodiac"
     p_sirius = args.sirius_jar
     fpt_folder = args.fpt_folder
-    p_csv_folder = os.path.abspath(args.input_csv_file)
+
+    #read csv file if not empty
+    empty_exp = True
+    if args.input_csv_file != '':
+        p_csv_folder = os.path.abspath(args.input_csv_file) 
+        for root,dirs,files in os.walk(p_csv_folder):
+            if len(files) == 1:
+                empty_exp = False
+            for name in files:
+                p_csv = os.path.join(root,name)
+
     dir_zip = args.dir_zip
     summary = args.summary
     log = args.log
 
     #start the log file
     fLog = open(log,"w")
-    empty_exp = True
-    for root,dirs,files in os.walk(p_csv_folder):
-        if len(files) == 1:
-            empty_exp = False
-            for name in files:
-                p_csv = os.path.join(root,name)
 
     
 
@@ -161,6 +165,7 @@ def main():
     else:
         cmd = "%s --zodiac --sirius %s --thresholdfilter 0.96  --output %s --processors 16 --spectra %s" %(p_sirius,p_out_sirius,p_out_zodiac,p_mgf)
         execute_script_file.write(cmd + "\n")
+
 
     #step3:
     if runFID:

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<interface id="sirius" version="1.2.3">
-	<!-- View definitions -->
+<interface id="sirius-test" version="1.2.3">
 	<download>
 		<source type="folder" name="summary/"/>
 		<source type="folder" name="fpt/"/>
@@ -14,26 +13,23 @@
 		<blockRef id="main" type="csv_view"/>
 	</view>
 
-	<!-- Block definitions -->
-
 	<block id="csv_view" type="table">
 		<data>
 			<source type="file" name="gnps/zodiac_summary.csv"/>
 			<parsers>
 				 <parser type="tabular"/>
 			</parsers>
-			<processors>
-				<processor type="uploadFilename" field="SpectrumFile"/>
-			</processors>
-			<row>
+		</data>
+		<row>
 				<column type="integer" field="id" label="id" width="2"/>
 				<column type="text" field="SiriusMF" label="SiriusMF" width="15"/>
 				<column type="float" field="SiriusScore" label="SiriusScore" precision="3"/>
 				<column type="integer" field="connectingPeaks" label="connectingPeaks" width="2"/>
 				<column type="text" field="ZodiacMF" label="ZodiacMF" width="15"/>
 				<column type="float" field="ZodiacScore" label="ZodiacScore" precision="3"/>
-			</row>
-		</data>
+			
+		</row>
 	</block>
-
 </interface>
+
+

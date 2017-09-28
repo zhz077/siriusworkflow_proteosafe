@@ -103,7 +103,9 @@ def main():
 				zodiac[0].append('sirius_MF_%d'%(int(i/2)+1))
 			else:
 				zodiac[0].append('sirius_score_%d'%(int(i/2)+1))
-
+		for i in zodiac:
+			for j in range(max_col-len(i)):
+				i.append(' ')
 		with open(p_cy+'/zodiac_summary.csv','w') as result:
 			writer = csv.writer(result,delimiter='\t')
 			writer.writerows(zodiac)
@@ -148,7 +150,7 @@ def main():
 		fingerid = sepCol(fingerid,'smiles')
 		fingerid = sepCol(fingerid,'score')
 		fingerid = sepCol(fingerid,'name')
-		fingerid.to_csv(p_gnps+'/summary_csi_fingerid_1.csv',sep='\t',index=False)
+		fingerid.to_csv(p_gnps+'/summary_csi_fingerid.csv',sep='\t',index=False)
 
 	
 
