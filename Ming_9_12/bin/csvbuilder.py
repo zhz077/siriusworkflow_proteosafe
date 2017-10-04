@@ -10,6 +10,8 @@ def searchmf(foldername,mf):
 	smile = ''
 	smileS = ''
 	sname=''
+	counter =''
+
 
 	
 	for root, dirs, files in os.walk(foldername):
