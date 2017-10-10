@@ -10,9 +10,7 @@ def searchmf(foldername,mf):
 	smile = ''
 	smileS = ''
 	sname=''
-	counter =''
-
-
+	counter=''
 	
 	for root, dirs, files in os.walk(foldername):
 		for name in files:
@@ -102,9 +100,9 @@ def main():
 				max_col = len(i)
 		for i in range(max_col-len(zodiac[0])):
 			if i%2 ==0:
-				zodiac[0].append('sirius_MF_%d'%(int(i/2)+1))
+				zodiac[0].append('zodiac_MF_%d'%(int(i/2)+1))
 			else:
-				zodiac[0].append('sirius_score_%d'%(int(i/2)+1))
+				zodiac[0].append('zodiac_score_%d'%(int(i/2)+1))
 		for i in zodiac:
 			for j in range(max_col-len(i)):
 				i.append(' ')
@@ -132,6 +130,20 @@ def main():
 				fingerid=fingerid.drop(name,1)
 	
 	    # add the rank2, rank3 strutures to each zodiac mf
+		evalList = []
+		for s in fingerid['score']:
+			if int(s) > -10:
+				evalList.append("Very Good (FDR ~5%)")
+			elif int(s) >-12:
+				evalList.append("Good (FDR ~10%)")
+			elif int(s)>-30:
+				evalList.append("Satisfactory (FDR ~20%)")
+			elif int(s)>-65:
+				evalList.append("Fair (FDR ~30%)")
+			else:
+				evalList.append("Bad ")
+		fingerid['Estimate identification'] = evalList;
+		
 		mf_str= [] 
 		mf_score=[]
 		mf_name=[]
@@ -143,6 +155,7 @@ def main():
 		fingerid['smiles'] = mf_str
 		fingerid['score'] = mf_score
 		fingerid['name'] = mf_name
+
 
 
 		fingerid.to_csv(p_cy+'/summary_csi_fingerid.csv',sep='\t',index=False)
