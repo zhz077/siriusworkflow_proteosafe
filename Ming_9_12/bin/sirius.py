@@ -33,8 +33,8 @@ def main():
     parser.add_argument('gurobi_path', help='gurobi_path')
     parser.add_argument('canopus_path', help='canopus_path')
 
-    args = parser.parse_args()
 
+    args = parser.parse_args()
     param = args.workflow_parameters
     p_mf = args.mf_folder
     p_mgf = os.path.abspath(args.input_mgf_file)
@@ -55,6 +55,7 @@ def main():
                 empty_exp = False
             for name in files:
                 p_csv = os.path.join(root,name)
+
 
     dir_zip = args.dir_zip
     summary = args.summary
@@ -109,6 +110,10 @@ def main():
         precursor= params_obj["precursor"][0]
     except:
         precursor = str(500)
+    try:
+        processor= params_obj["processor"][0]
+    except:
+        processor= str(16)
 
     #save it in case lib doesnt work
     '''param = sys.argv[3]
@@ -155,16 +160,18 @@ def main():
 
 
     # step1
-    cmd = "%s -p %s --isotope score --ppm-max %s --candidates %s --maxmz %s --database %s --beautifytrees --%s --%s -o %s %s" % (p_sirius, profile, ppm,tree_number, precursor,DB,adduct,i_mode,p_out_sirius, p_mgf)
+    cmd = "%s -p %s --isotope both --ppm-max %s --candidates %s --maxmz %s --database %s --beautifytrees --%s --%s -o %s %s" % (p_sirius, profile, ppm,tree_number, precursor,DB,adduct,i_mode,p_out_sirius, p_mgf)
     execute_script_file.write(cmd + "\n")
 
     #step 2
     if annot and not empty_exp:
-        cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter 0.96 --output %s --processors 16 --spectra %s" %(p_sirius,p_out_sirius,p_csv,p_out_zodiac,p_mgf)
+        cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter 0.96 --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius,p_csv,p_out_zodiac,processor,p_mgf)
         execute_script_file.write(cmd + "\n")
     else:
-        cmd = "%s --zodiac --sirius %s --thresholdfilter 0.96  --output %s --processors 16 --spectra %s" %(p_sirius,p_out_sirius,p_out_zodiac,p_mgf)
+        cmd = "%s --zodiac --sirius %s --thresholdfilter 0.96  --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius,p_out_zodiac,processor,p_mgf)
         execute_script_file.write(cmd + "\n")
+
+
 
 
     #step3:
@@ -222,21 +229,30 @@ def main():
     #try to find all the ftp files and label them with feature ids
     extension='.fpt'
     ex_mf = '.csv'
-    if run_FID:
-        for root, dirs, files in os.walk(p_out_fingerid):
-            for name in files:
-                if os.path.splitext(name)[-1] == extension:
-                    filepath = os.path.join(root, name)
-                    sendpathset = str(filepath).split("/")
-                    sendpath = sendpathset[-3].split("_")[-1]
-                    fullname = sendpathset[-1]
-                    sendpath = fpt_folder+"/"+sendpath+"_"+fullname
-                    cmd = "cp %s %s" %(filepath,sendpath)
-                    os.system(cmd)
-                if os.path.splitext(name)[-1] == ex_mf:
-                    filepath = os.path.join(root, name)
-                    cmd = "cp %s %s" %(filepath,p_mf)
-                    os.system(cmd)
+    with tempfile.TemporaryDirectory() as p_fpt:
+        if run_FID:
+            for root, dirs, files in os.walk(p_out_fingerid):
+                for name in files:
+            	    if os.path.splitext(name)[-1] == extension:
+            	        filepath = os.path.join(root, name)
+            	        sendpathset = str(filepath).split("/")
+            	        sendpath = sendpathset[-3].split("_")[-1]
+            	        fullname = sendpathset[-1]
+            	        sendpath = p_fpt+"/"+sendpath+"_"+fullname
+            	        cmd = "cp %s %s" %(filepath,sendpath)
+            	        os.system(cmd)
+            	    if os.path.splitext(name)[-1] == ex_mf:
+            	        filepath = os.path.join(root, name)
+            	        cmd = "cp %s %s" %(filepath,p_mf)
+            	        os.system(cmd)
+
+            cmd ="zip -r %s %s" %(os.path.join(fpt_folder,"fpt.zip"),p_fpt)
+            try: 
+                subprocess.check_output(["zip","-r",os.path.join(fpt_folder,"fpt.zip"),p_fpt])
+                os.system(cmd)
+            except subprocess.CalledProcessError as e:
+                fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be fpt files. \n")
+
     if runZodiac:
         transFiles(p_out_zodiac,'zodiac_summary.csv',summary)
     if run_FID:

@@ -4,6 +4,7 @@ import os
 import argparse
 import csv
 import pandas as pd
+import math
 
 
 def searchmf(foldername,mf):
@@ -11,6 +12,7 @@ def searchmf(foldername,mf):
 	smileS = ''
 	sname=''
 	counter=''
+
 	
 	for root, dirs, files in os.walk(foldername):
 		for name in files:
@@ -132,16 +134,19 @@ def main():
 	    # add the rank2, rank3 strutures to each zodiac mf
 		evalList = []
 		for s in fingerid['score']:
-			if int(s) > -10:
-				evalList.append("Very Good (FDR ~5%)")
-			elif int(s) >-12:
-				evalList.append("Good (FDR ~10%)")
-			elif int(s)>-30:
-				evalList.append("Satisfactory (FDR ~20%)")
-			elif int(s)>-65:
-				evalList.append("Fair (FDR ~30%)")
+			if math.isnan(s) == False:
+			    if int(s) > -10:
+			    	evalList.append("Very Good (FDR ~5%)")
+			    elif int(s) >-12:
+			    	evalList.append("Good (FDR ~10%)")
+			    elif int(s)>-30:
+				    evalList.append("Satisfactory (FDR ~20%)")
+			    elif int(s)>-65:
+				    evalList.append("Fair (FDR ~30%)")
+			    else:
+				    evalList.append("Bad ")
 			else:
-				evalList.append("Bad ")
+				evalList.append("No Result")
 		fingerid['Estimate identification'] = evalList;
 		
 		mf_str= [] 
