@@ -4,12 +4,12 @@
 	<object name="csv"/>
 	<object     name="workflowParameters"/>
 	<collection   name="summary"/>
-	<collection		name = "fpt"/>
 	<collection 	name="gnps"/>
 	<collection 	name = "cyto"/>
 	<collection 	name = "mf"/>
 `	<collection 	name="dir_zip"/>
 	<object			name = "log"/>
+	<collection		name = "fpt"/>
 	<action name="begin">
 		<output port="mgf"       object="mgf"/>
 		<output port="csv"       object="csv"/>
@@ -20,11 +20,11 @@
 		<input  port="mgf"             object="mgf"/>
 		<input  port="csv"            	object="csv"/>
 		<input  port="flowParams"      object="workflowParameters"/>
-		<output  port="fpt"		   collection="fpt"/>
 		<output  port="summary"	   collection="summary"/>
 		<output port="mf"		collection="mf"/>
 		<output port="dir_zip"	collection="dir_zip"/>
 		<output port ="log"		object = "log"/>
+		<output port = "fpt"	collection ="fpt"/>
 	</action>
 
 	<action name="csvbuilder">
@@ -36,10 +36,10 @@
 
 	<action name="end">
 		<input port="summary"		 collection="summary"/>
-		<input port="fpt"		  collection="fpt"/>
 		<input port = "gnps"		collection= "gnps"/>
 		<input port = "cyto"	collection = "cyto"/>
 		<input port ="dir_zip"	collection="dir_zip"/>
 		<input port = "log"		object = "log"/>
+		<input port = "fpt"		collection ="fpt"/>
 	</action>
 </flow>

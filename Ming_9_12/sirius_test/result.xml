@@ -2,11 +2,11 @@
 <interface id="sirius-test" version="1.2.3">
 	<download>
 		<source type="folder" name="summary/"/>
-	
 		<source type="folder" name="gnps/"/>
 		<source type="folder" name="cyto/"/>
 		<source type = "folder" name="dir_zip/"/>
 		<source type = "folder" name="log/"/>
+		<source type = "folder" name="fpt/"/>
 	</download>
 
 	<view id="csv_view" label="Sirius Results View">

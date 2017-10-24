@@ -41,6 +41,7 @@
                 <option value ="kegg"/>
                 <option value ="knapsack"/>
                 <option value ="biocyc"/>
+		        <option value ="all"/>
             </options>
         </parameter>
 
@@ -84,8 +85,14 @@
                 <option value ="kegg"/>
                 <option value ="knapsack"/>
                 <option value ="biocyc"/>
+		        <option value ="all"/>
             </options>
         </parameter>
+	
+	    <parameter name = "processor"	label = "Number of processors used for computation">
+		    <default	value = "16"/>
+		    <validator type="integer" minimum="1" maximum="16"/>
+	    </parameter>
 
 		<parameter name="csv" label="Spectral Annotation File">
             <fileGenerator type="upload" purpose="spectrum"  target="csv"/>
@@ -102,13 +109,14 @@
 	<!-- computing -->
     <block label="Computing Options">
        	<row>
-			<cell><label><content parameter="mgf"/></label></cell>
+			<cell><label><content parameter="mgf"/></label></cell>    
             <cell>
                 <module id="mgf" type="fileSelector">
                     <property name="label">Input mgf File</property>
                 </module>
             </cell>
 
+			
 			<cell><label><content parameter = "ppm"/></label></cell>
 			<cell>
 				<input type = "text"	parameter = "ppm">
@@ -172,16 +180,23 @@
             </cell>
         </row>
 
-		<row>
+	    <row>
             <cell>
                 <input  type="checkbox" parameter="spectral_annotation"/>
                 <label><content parameter = "spectral_annotation"/></label>
             	<content parameter="csv"/>
                 <module id="csv" type="fileSelector">
-					<property name="label">Spectral Annotation Files</property>
-				</module>
+			        <property name="label">Spectral Annotation Files</property>
+		        </module>
             </cell>
+            
+			<cell><label><content parameter ="processor"/></label></cell>
+			<cell>
+				<input type = "text"	parameter = "processor">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+			</cell>
+			
         </row>
     </block>
-
 </interface>

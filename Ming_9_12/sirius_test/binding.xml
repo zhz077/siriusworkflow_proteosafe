@@ -24,11 +24,11 @@
 		<inputAsRequirement port="mgf"		requirement = "mgf"/>
 		<inputAsRequirement port="csv"		requirement = "csv"/>
     	<inputAsRequirement port="flowParams"       requirement="flowParams"/>
-		<productionToOutput port="fpt"	    production="fpt"/>
 		<productionToOutput port="summary"		production="summary"/>
 		<productionToOutput port="mf"		production = "mf"/>
 		<productionToOutput	port="dir_zip"	production="dir_zip"/>
 		<productionToOutput	port="log"	production="log"/>
+		<productionToOutput	port="fpt"	production="fpt"/>
     </bind>
 
 	<bind action = "csvbuilder" tool="csvbuilder">
@@ -47,9 +47,6 @@
 		<upload port="summary" type="folder">
             <query name="resource" value="summary"/>
         </upload>
-        <upload port="fpt" type="folder">
-            <query name="resource" value="fpt"/>
-        </upload>
 		<upload port="gnps" type="folder">
             <query name="resource" value="gnps"/>
         </upload>
@@ -61,6 +58,9 @@
         </upload>
 		<upload port="log" type="file">
             <query name="resource" value="log"/>
+        </upload>
+        <upload port="fpt" type="folder">
+            <query name="resource" value="fpt"/>
         </upload>
     </bind>
 </binding>
