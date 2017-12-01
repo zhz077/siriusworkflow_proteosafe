@@ -15,28 +15,44 @@
         <download port="flowParams" type="file">
             <query name="resource" value="params"/>
         </download>
+        
 		<downloadParams>
 			<query name="resource" value="params"/>
 		</downloadParams>
     </bind>
+    
+    <bind action="sepfile" tool="sepfile">
+		<inputAsRequirement port="mgf"		requirement = "mgf"/>
+		<productionToOutput port="splitmgf"		production="splitmgf"/>
+    </bind>
+    
 
     <bind action="sirius" tool="sirius">
+		<inputAsRequirement port="splitmgf"		requirement = "splitmgf"/>
+    	<inputAsRequirement port="flowParams"       requirement="flowParams"/>
+    	<productionToOutput port="siriusoutput"		production="siriusoutput"/>
+		<productionToOutput	port="siriuslog"	production="siriuslog"/>
+    </bind>
+    
+   <bind action="zodiac" tool="zodiac">
 		<inputAsRequirement port="mgf"		requirement = "mgf"/>
 		<inputAsRequirement port="csv"		requirement = "csv"/>
     	<inputAsRequirement port="flowParams"       requirement="flowParams"/>
-		<productionToOutput port="summary"		production="summary"/>
+    	<inputAsRequirement port="siriusoutput"		requirement="siriusoutput"/>
+    	<productionToOutput port="summary"		production="summary"/>
+        <productionToOutput	port="zodiaclog"	production="zodiaclog"/>
 		<productionToOutput port="mf"		production = "mf"/>
-		<productionToOutput	port="dir_zip"	production="dir_zip"/>
-		<productionToOutput	port="log"	production="log"/>
 		<productionToOutput	port="fpt"	production="fpt"/>
+		<productionToOutput	port="dir_zip"	production="dir_zip"/>
     </bind>
-
+    
 	<bind action = "csvbuilder" tool="csvbuilder">
 		<inputAsRequirement port="mf"		requirement = "mf"/>
 		<inputAsRequirement port="summary"		requirement="summary"/>
 		<productionToOutput port="gnps"		 production="gnps"/>
 		<productionToOutput port="cyto"		 production="cyto"/>
 	</bind>
+	
 
 
     <bind action="end" type="upload">
@@ -56,11 +72,12 @@
 		<upload port="dir_zip" type="folder">
             <query name="resource" value="dir_zip"/>
         </upload>
-		<upload port="log" type="file">
+		<upload port="log" type="folder">
             <query name="resource" value="log"/>
         </upload>
         <upload port="fpt" type="folder">
             <query name="resource" value="fpt"/>
         </upload>
     </bind>
+
 </binding>

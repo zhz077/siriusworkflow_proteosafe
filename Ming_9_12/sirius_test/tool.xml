@@ -1,46 +1,81 @@
 <toolset>
     <pathSet base="anaconda3/bin">
+        <toolPath tool="sepfile" path="python3.5"/>
         <toolPath tool="sirius" path="python3.5"/>
+        <toolPath tool="zodiac" path="python3.5"/>
         <toolPath tool="csvbuilder" path="python3.5"/>
     </pathSet>
 
     <pathSet base="sirius">
+        <pathVar name="sepfile.script" path="sepfile.py"/>
         <pathVar name="sirius.script" path="sirius.py"/>
+        <pathVar name="zodiac.script" path="zodiac.py"/>
         <pathVar name="csvbuilder.script" path="csvbuilder.py"/>
         <pathVar name="sirius.jar" path="sirius_package/bin/sirius"/>
         <pathVar name="canopus" path="canopus_1_fixed.data.gz"/>
     </pathSet>
     <!--pathSet base="sirius">
+    	<toolPath tool="sepfile" path="sepfile.py"/>
 		<toolPath tool="sirius" path="sirius.py"/>
+		<toolPath tool="zodiac" path="zodiac.py"/>
 		<toolPath tool="csvbuilder" path="csvbuilder.py"/>
 		<pathVar name = "sirius.jar" path="sirius_package/bin/sirius"/>
 		<pathVar name = "canopus"	path ="canopus_1_fixed.data.gz"/>
 	</pathSet-->
 
+    <tool name = "sepfile">
+        <require name = "mgf"    type = "file"/>
+        <produce name = "splitmgf"    type="folder"/>
+        <execution env="binary" argConvention ="adhoc">
+            <arg pahtRef = "sepfile.script"/>
+            <arg valueRef ="mgf"/>
+            <arg valueRef = "splitmgf"/>
+         </execution>
+    </tool>
+                    
     <tool name="sirius">
-        <require name="mgf" type="file"/>
-        <require name="csv" type="file"/>
+        <require name="splitmgf" type="file" datatype="splitmgf"/>
         <require name="flowParams" type="file"/>
-        <produce name="summary" type="folder"/>
-        <produce name="mf" type="folder"/>
-        <produce name="dir_zip" type="folder"/>
-        <produce name="fpt"		type="folder"/>
-		<produce name="log" type="file" naming="explicit" extension="log"/>
+        <produce name="siriusoutput" type="file" naming="explicit" extension="zip"/>
+		<produce name="siriuslog" type="file" naming="explicit" extension="log"/>
         <execution env="binary" argConvention="adhoc">
             <arg pathRef="sirius.script"/>
+            <arg valueRef="splitmgf"/>
+            <arg valueRef="flowParams"/>
+            <arg valueRef = "siriusoutput"/>
+	    	<arg valueRef = "siriuslog"/>
+            <arg pathRef="sirius.jar"/>
+            <arg value="/opt/gurobi/gurobi702/linux64"/>
+        </execution>
+    </tool>
+    
+    <tool name="zodiac">
+        <require name="mgf" type="file" />
+        <require name="csv" type="file"/>
+        <require name="flowParams" type="file"/>
+        <require name="siriusoutput" type="folder"/>
+        <produce name="summary" type="folder"/>
+        <produce name="zodiaclog" type="file" naming="explicit" extension="log"/>
+        <produce name="mf" type="folder"/>
+        <produce name="fpt"		 type="folder"/>
+        <produce name="dir_zip"		 type="folder"/>
+        <execution env="binary" argConvention="adhoc">
+            <arg pathRef="zodiac.script"/>
             <arg valueRef="mgf"/>
             <arg valueRef="csv"/>
             <arg valueRef="flowParams"/>
-            <arg valueRef = "fpt" />
+            <arg valueRef = "siriusoutput"/>
             <arg valueRef="summary"/>
+            <arg valueRef = "zodiaclog"/>
             <arg valueRef="mf"/>
-            <arg valueRef="dir_zip"/>
-	    	<arg valueRef = "log"/>
+            <arg valueRef = "fpt" />
             <arg pathRef="sirius.jar"/>
             <arg value="/opt/gurobi/gurobi702/linux64"/>
             <arg pathRef="canopus"/>
+            <arg valueRef="dir_zip"/>
         </execution>
     </tool>
+
 
     <tool name="csvbuilder">
         <require name="mf" type="folder"/>
