@@ -137,10 +137,10 @@ def main():
 
         #step 2
         if annot and not empty_exp:
-            cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter 0.96 --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,p_csv,p_out_zodiac,processor,p_mgf)
+            cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter 0.9 --minLocalConnections 10  --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,p_csv,p_out_zodiac,processor,p_mgf)
             execute_script_file2.write(cmd + "\n")
         else:
-            cmd = "%s --zodiac --sirius %s --thresholdfilter 0.96  --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,p_out_zodiac,processor,p_mgf)
+            cmd = "%s --zodiac --sirius %s --thresholdfilter 0.9 --minLocalConnections 10 --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,p_out_zodiac,processor,p_mgf)
             execute_script_file2.write(cmd + "\n")
 
 
