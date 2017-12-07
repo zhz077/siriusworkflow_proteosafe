@@ -124,6 +124,10 @@ def main():
         processor= params_obj["processor"][0]
     except:
         processor= str(16)
+    try:
+        filter= params_obj["filter"][0]
+    except:
+        filter= str(0.9)
 
 
     #writing batch file
@@ -144,10 +148,10 @@ def main():
 
         #step 2
         if annot and not empty_exp:
-            cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter 0.9 --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,p_csv,connections,p_out_zodiac,processor,p_mgf)
+            cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,p_csv,filter,connections,p_out_zodiac,processor,p_mgf)
             execute_script_file2.write(cmd + "\n")
         else:
-            cmd = "%s --zodiac --sirius %s --thresholdfilter 0.9 --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,connections,p_out_zodiac,processor,p_mgf)
+            cmd = "%s --zodiac --sirius %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,filter,connections,p_out_zodiac,processor,p_mgf)
             execute_script_file2.write(cmd + "\n")
 
 

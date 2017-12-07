@@ -73,7 +73,7 @@
     
         <parameter name = "minLocalConnections"    label = "Minimum Local Connections">
         <default	value = "10"/>
-		    <validator type="integer" minimum="1" maximum="16"/>
+		    <validator type="integer" minimum="1" maximum="100"/>
 	    </parameter>
 
 
@@ -108,6 +108,12 @@
 		<parameter name = "spectral_annotation"    label = "Use MS/MS spectral annotation">
             <default     value="off"/>
         </parameter>
+
+		<parameter name = "filter"    label = "Threshold Filter">
+            <default	value = "0.9"/>
+		    <validator type="float" minimum="0" maximum="1"/>
+	    </parameter>
+
 
 
 	</parameters>
@@ -171,6 +177,12 @@
 			<cell><label><content parameter = "tree_number"/></label></cell>
 			<cell>
 				<input type = "text"	parameter = "tree_number">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+			</cell>
+			<cell><label><content parameter = "filter"/></label></cell>
+			<cell>
+				<input type = "text"	parameter = "filter">
 		 			<attribute name = "size" value = "10"/>
 				</input>
 			</cell>
