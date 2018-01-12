@@ -2,6 +2,7 @@
     <pathSet base="anaconda3/bin">
         <toolPath tool="sepfile" path="python3.5"/>
         <toolPath tool="sirius" path="python3.5"/>
+        <toolPath tool="zodiac" path="python3.5"/>
         <toolPath tool="csvbuilder" path="python3.5"/>
     </pathSet>
 
@@ -26,7 +27,7 @@
         <require name = "mgf"    type = "file"/>
         <produce name = "splitmgf"    type="folder"/>
         <execution env="binary" argConvention ="adhoc">
-            <arg pahtRef = "sepfile.script"/>
+            <arg pathRef = "sepfile.script"/>
             <arg valueRef ="mgf"/>
             <arg valueRef = "splitmgf"/>
          </execution>
