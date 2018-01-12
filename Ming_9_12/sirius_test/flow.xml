@@ -8,7 +8,9 @@
 	<collection 	name = "cyto"/>
 	<collection 	name = "mf"/>
 	<collection		name = "fpt"/>
-`	<collection	        name="dir_zip"/>
+`	<object	        name="sirius_zip"/>
+    <object	        name="zodiac_zip"/>
+    <object	        name="fingerid_zip"/>
 	<collection		name = "siriuslog"/>
 	<object	name = "zodiaclog"/>
 	<collection		name = "summary"/>
@@ -41,7 +43,9 @@
 		<output port ="zodiaclog"		object = "zodiaclog"/>
 		<output port="mf"		collection="mf"/>
 		<output port = "fpt"	collection ="fpt"/>
-		<output port = "dir_zip" collection = "dir_zip"/>
+		<output port = "sirius_zip" object = "sirius_zip"/>
+		<output port = "zodiac_zip" object = "zodiac_zip"/>
+		<output port = "fingerid_zip" object = "fingerid_zip"/>
 	</action>
 	
 
@@ -56,7 +60,9 @@
 		<input port="summary"		 collection="summary"/>
 		<input port = "gnps"		collection= "gnps"/>
 		<input port = "cyto"	collection = "cyto"/>
-		<input port ="dir_zip"	collection="dir_zip"/>
+		<input port ="sirius_zip"	object="sirius_zip"/>
+		<input port ="zodiac_zip"	object="zodiac_zip"/>
+		<input port ="fingerid_zip"	object="fingerid_zip"/>
 		<input port = "log"		collection = "log"/>
 		<input port = "fpt"		collection ="fpt"/>
 	</action>

@@ -43,7 +43,9 @@
         <productionToOutput	port="zodiaclog"	production="zodiaclog"/>
 		<productionToOutput port="mf"		production = "mf"/>
 		<productionToOutput	port="fpt"	production="fpt"/>
-		<productionToOutput	port="dir_zip"	production="dir_zip"/>
+		<productionToOutput	port="sirius_zip"	production="sirius_zip"/>
+		<productionToOutput	port="zodiac_zip"	production="zodiac_zip"/>
+		<productionToOutput	port="fingerid_zip"	production="fingerid_zip"/>
     </bind>
     
 	<bind action = "csvbuilder" tool="csvbuilder">
@@ -69,8 +71,14 @@
 		<upload port="cyto" type="folder">
             <query name="resource" value="cyto"/>
         </upload>
-		<upload port="dir_zip" type="folder">
-            <query name="resource" value="dir_zip"/>
+		<upload port="sirius_zip" type="file">
+            <query name="resource" value="sirius_zip"/>
+        </upload>
+        <upload port="zodiac_zip" type="file">
+            <query name="resource" value="zodiac_zip"/>
+        </upload>
+        <upload port="fingerid_zip" type="file">
+            <query name="resource" value="fingerid_zip"/>
         </upload>
 		<upload port="log" type="folder">
             <query name="resource" value="log"/>
