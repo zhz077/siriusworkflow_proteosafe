@@ -35,7 +35,7 @@ def main():
     parser.add_argument('mf', help = 'mf')   
     parser.add_argument('fpt', help = 'fpt')  
     parser.add_argument('sirius_jar', help='sirius_jar')
-    #parser.add_argument('gurobi_path', help='gurobi_path')
+    parser.add_argument('gurobi_path', help='gurobi_path')
     parser.add_argument('canopus_path', help='canopus_path')
     parser.add_argument('sirius_zip', help = 'sirius_zip')  
     parser.add_argument('zodiac_zip', help = 'zodiac_zip')
@@ -135,8 +135,8 @@ def main():
 
     #writing batch file
     execute_script_file2 = tempfile.NamedTemporaryFile(delete=False, mode='w')
-    '''cmd = "export GUROBI_HOME=%s" % (args.gurobi_path)
-    execute_script_file2.write(cmd + "\n")'''
+    cmd = "export GUROBI_HOME=%s" % (args.gurobi_path)
+    execute_script_file2.write(cmd + "\n")
 
 
 
