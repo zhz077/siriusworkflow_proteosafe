@@ -18,7 +18,8 @@ def transFiles(infolder,extension,outfolder):
                 subprocess.check_output(["cp",filepath,sendpath])
                 os.system(cmd)
             except subprocess.CalledProcessError as e:
-                fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be csv summary files. \n")
+                #fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be csv summary files. \n")
+                return
 
 
 def main():
@@ -34,9 +35,11 @@ def main():
     parser.add_argument('mf', help = 'mf')   
     parser.add_argument('fpt', help = 'fpt')  
     parser.add_argument('sirius_jar', help='sirius_jar')
-    parser.add_argument('gurobi_path', help='gurobi_path')
+    #parser.add_argument('gurobi_path', help='gurobi_path')
     parser.add_argument('canopus_path', help='canopus_path')
-    parser.add_argument('dir_zip', help = 'dir_zip')  
+    parser.add_argument('sirius_zip', help = 'sirius_zip')  
+    parser.add_argument('zodiac_zip', help = 'zodiac_zip')
+    parser.add_argument('fingerid_zip', help = 'fingerid_zip')
 
 
 
@@ -48,23 +51,23 @@ def main():
     p_out = p_mgf.split(p_mgf.split("/")[-2])[0]
     p_out_fingerid = p_out+"fingerid"
     p_out_zodiac = p_out+"zodiac"
-    p_out_sirius1 = p_out+"sirius"
+    p_out_sirius = p_out+"sirius"
     p_sirius = args.sirius_jar
     fpt_folder = args.fpt
 
 
-    #read csv file if not empty
+
+    #check csv is a directory or a file
     empty_exp = True
-    if args.input_csv_file != '':
-        p_csv_folder = os.path.abspath(args.input_csv_file) 
-        for root,dirs,files in os.walk(p_csv_folder):
-            if len(files) == 1:
-                empty_exp = False
-            for name in files:
-                p_csv = os.path.join(root,name)
+    if args.input_csv_file != '':  
+        if(os.path.isfile(args.input_csv_file)):
+            empty_exp = False
+            p_csv = os.path.abspath(args.input_csv_file)
 
 
-    dir_zip = args.dir_zip
+    sirius_zip = args.sirius_zip
+    zodiac_zip = args.zodiac_zip
+    fingerid_zip = args.fingerid_zip
     log = args.zodiaclog
 
     #start the log file
@@ -82,10 +85,10 @@ def main():
         adduct = "guession [M+H]+,[M+Na]+,[M+K]+,[M+NH4]+"
 
     try:
-        if params_obj["spectral_annotation"][0] == "off":
-            annot = False
-    except:
+        if params_obj["spectral_annotation"][0] == "on":
             annot = True
+    except:
+            annot = False
     try:
         if params_obj["FingerID_run"][0] == "on":
              runFID = True
@@ -132,8 +135,8 @@ def main():
 
     #writing batch file
     execute_script_file2 = tempfile.NamedTemporaryFile(delete=False, mode='w')
-    cmd = "export GUROBI_HOME=%s" % (args.gurobi_path)
-    execute_script_file2.write(cmd + "\n")
+    '''cmd = "export GUROBI_HOME=%s" % (args.gurobi_path)
+    execute_script_file2.write(cmd + "\n")'''
 
 
 
@@ -146,46 +149,43 @@ def main():
                 os.system(cmd)
                 filecount = filecount+1
 
-        #step 2
-        if annot and not empty_exp:
-            cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,p_csv,filter,connections,p_out_zodiac,processor,p_mgf)
-            execute_script_file2.write(cmd + "\n")
-        else:
-            cmd = "%s --zodiac --sirius %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius1,filter,connections,p_out_zodiac,processor,p_mgf)
-            execute_script_file2.write(cmd + "\n")
+    #step 2
+    if annot and not empty_exp:
+        cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius,p_csv,filter,connections,p_out_zodiac,processor,p_mgf)
+        execute_script_file2.write(cmd + "\n")
+        print(cmd)
+        print("csv")
+    else:
+        cmd = "%s --zodiac --sirius %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius,filter,connections,p_out_zodiac,processor,p_mgf)
+        execute_script_file2.write(cmd + "\n")
+        print(cmd)
+        print(annot)
+        print(empty_exp)
 
 
 
 
-        #step3:
-        if runFID:
-            cmd = "%s --fingerid --fingerid-db %s --experimental-canopus=%s -o %s %s" %(p_sirius,FID_DB,p_c,p_out_fingerid,p_out_zodiac)
-            execute_script_file2.write(cmd + "\n")
+    #step3:
+    if runFID:
+        cmd = "%s --fingerid --fingerid-db %s --experimental-canopus=%s -o %s %s" %(p_sirius,FID_DB,p_c,p_out_fingerid,p_out_zodiac)
+    execute_script_file2.write(cmd + "\n")
 
-        #execution
-        execute_script_file2.close()
-        cmd = "sh %s" % (execute_script_file2.name)
+    #execution
+    execute_script_file2.close()
+    cmd = "sh %s" % (execute_script_file2.name)
 
-        err = subprocess.run(['sh',execute_script_file2.name],stderr=subprocess.PIPE)
-        stderror = err.stderr.decode(sys.stderr.encoding)
-        if stderror != None:
-            fLog.write("Sirius process has errors and/or warnings. Please see the following message.\n")
-            fLog.write(stderror)
-            fLog.write('\n')
-        os.unlink(execute_script_file2.name)
-
-
+    err = subprocess.run(['sh',execute_script_file2.name],stderr=subprocess.PIPE)
+    stderror = err.stderr.decode(sys.stderr.encoding)
+    if stderror != None:
+        fLog.write("Sirius process has errors and/or warnings. Please see the following message.\n")
+        fLog.write(stderror)
+        fLog.write('\n')
+    os.unlink(execute_script_file2.name)
 
 
 
-    #zip the output to one dir_zip
-    cmd ="zip -r %s final"%(dir_zip)
-    try:
-        subprocess.check_output(["zip","-r",dir_zip,"final"])
-        os.system(cmd)
-    except subprocess.CalledProcessError as e:
-        fLog.write("The workflow didnt proceed successfully\n")
-    
+
+
     #try to find all the ftp files and label them with feature ids
     
     extension='.fpt'
@@ -215,10 +215,40 @@ def main():
                 fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be fpt files. \n")
 
 
-    transFiles(p_out_zodiac,'zodiac_summary.csv',args.summary)
-    transFiles(p_out_fingerid,'summary_csi_fingerid.csv',args.summary)
 
-    fLog.close()
+            #zip the sirius output
+            cmd ="zip -r %s %s"%(sirius_zip,p_out_sirius)
+            try:
+                subprocess.check_output(["zip","-r",sirius_zip,p_out_sirius])
+                os.system(cmd)
+            except subprocess.CalledProcessError as e:
+                fLog.write("The sirius workflow didnt proceed successfully\n")
+
+            #zip the zodiac output
+            cmd ="zip -r %s %s"%(zodiac_zip,p_out_zodiac)
+            print (cmd)
+            try:
+                subprocess.check_output(["zip","-r",zodiac_zip,p_out_zodiac])
+                os.system(cmd)
+            except subprocess.CalledProcessError as e:
+                fLog.write("The zodiac workflow didnt proceed successfully\n")
+    
+            if runFID:
+                #zip the fingerid output
+                cmd ="zip -r %s %s"%(fingerid_zip,p_out_fingerid)
+                print(cmd)
+                try:
+                    subprocess.check_output(["zip","-r",fingerid_zip,p_out_fingerid])
+                    os.system(cmd)
+                except subprocess.CalledProcessError as e:
+                    cmd = "touch %s"%(fingerid_zip)
+                    os.system(cmd)
+                    fLog.write("The fingerid workflow didnt proceed successfully\n")
+    
+            transFiles(p_out_zodiac,'zodiac_summary.csv',args.summary)
+            transFiles(p_out_fingerid,'summary_csi_fingerid.csv',args.summary)
+
+            fLog.close()
 
 
 
