@@ -4,7 +4,9 @@
 		<source type="folder" name="summary/"/>
 		<source type="folder" name="gnps/"/>
 		<source type="folder" name="cyto/"/>
-		<source type = "folder" name="dir_zip/"/>
+		<source type = "file" name="sirius_zip"/>
+		<source type = "file" name = "zodiac_zip"/>
+		<source type = "file" name = "fingerid_zip"/>
 		<source type = "folder" name="log/"/>
 		<source type = "folder" name="fpt/"/>
 	</download>

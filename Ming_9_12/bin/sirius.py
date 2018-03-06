@@ -35,12 +35,12 @@ def main():
     #Match the parameters
     params_obj = ming_proteosafe_library.parse_xml_file(open(param))
     i_mode = "ion [M+H]+"
-    adduct = "auto-charge"
+    #adduct = "auto-charge"
 
 
 
-    if params_obj["adduct"][0] == "use MS1 information":
-        adduct = "guession [M+H]+,[M+Na]+,[M+K]+,[M+NH4]+"
+    #if params_obj["adduct"][0] == "use MS1 information":
+        #adduct = "guession [M+H]+,[M+Na]+,[M+K]+,[M+NH4]+"
 
     if params_obj["Ionisation_mode"][0] == "Negative":
         i_mode = "ion [M+H]-"
@@ -56,11 +56,24 @@ def main():
     try:
         tree_number = params_obj["tree_number"][0]
     except:
-        tree_number = str(20)
+        tree_number = str(50)
     try:
         precursor= params_obj["precursor"][0]
     except:
         precursor = str(500)
+    try:
+        element= params_obj["element"][0]
+    except:
+        element = 'None'
+    try:
+        timeout= params_obj["timeout"][0]
+    except:
+        timeout = -1
+    try:
+        processor= params_obj["processor"][0]
+    except:
+        processor = 16
+
 
 
 
@@ -69,10 +82,17 @@ def main():
     cmd = "export GUROBI_HOME=%s" % (args.gurobi_path)
     execute_script_file.write(cmd + "\n")
 
-
-    # step1
-    cmd = "%s -p %s --isotope both --ppm-max %s --candidates %s --maxmz %s --database %s --beautifytrees --%s --%s -o %s %s" % (p_sirius, profile, ppm,tree_number, precursor,DB,adduct,i_mode,p_out_sirius, p_mgf)
+    cmd = "%s --quiet --initial-compound-buffer 0 --profile %s --candidates %s --processors %s --maxmz %s --ppm-max %s --%s "%(p_sirius, profile,tree_number,processor,precursor,ppm,i_mode)
+    if int(timeout) >0:
+        cmd =cmd+"--compound-timeout %s " %(timeout)
+    if element != 'None':
+        cmd = cmd+"--elements %s " %(element)
+    else:
+        cmd = cmd +"--database %s "%(DB)
+    
+    cmd = cmd+"--sirius %s %s" %(p_out_sirius, p_mgf)
     execute_script_file.write(cmd + "\n")
+    print (cmd)
 
     #execution
     execute_script_file.close()
@@ -85,40 +105,19 @@ def main():
         fLog.write('\n')
 
     os.unlink(execute_script_file.name)
+    
 
-    #benchmarking
-    for root, dirs, files in os.walk('sirius'):
-        for name in files:
-            if len(name.split('version.txt')) !=1:
-                cmd = "rm %s"%(os.path.join(root, name))
-                os.system(cmd)
-            if len(name.split('.progress')) !=1:
-                cmd = "rm %s"%(os.path.join(root, name))
-                os.system(cmd)
-        for folder in dirs:
-            if len(folder.split('_mgf')) !=1:
-                print (folder)
-                firstcounter = folder.split('_')[-1]
-                newname = '%s_mgf-00000_%s' %(firstcounter,firstcounter)
-                try:
-                    os.rename(os.path.join(root,folder),os.path.join(root,newname))
-                except:
-                    print('notright')
-                    continue
-                print('benchmarking')
-                print(folder)
 
-    #zip the output to one dir_zip
-    runSirius=False
-    cmd ="zip -r %s sirius"%(p_output)
-    try:
-        subprocess.check_output(["zip","-r",p_output,"sirius"])
-        os.system(cmd)
-        runSirius = True
-    except subprocess.CalledProcessError as e:
-        fLog.write("step 1 (sirius computation) did not proceed successfully. \n")
+    #unzip the sirius
+    cmd2 = "zip -d %s version.txt" %(p_output)
+    cmd1 = "mv sirius %s"%(p_output)
+    os.system(cmd1)
+    os.system(cmd2)
 
     fLog.close()
+
+
+
 
 
 

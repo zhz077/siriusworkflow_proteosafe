@@ -47,7 +47,7 @@
 
 
 		<parameter name = "tree_number"	label = "Number of fragmentation tree to compute per spectrum">
-			<default	value = "20"/>
+			<default	value = "50"/>
 			<validator type="integer" minimum="0" maximum="1000"/>
 		</parameter>
 
@@ -75,14 +75,20 @@
         <default	value = "10"/>
 		    <validator type="integer" minimum="1" maximum="100"/>
 	    </parameter>
-
+	    
+	    <parameter name = "timeout"    label = "Time for computation (second)">
+		    <validator type="integer" minimum="1" maximum="9000"/>
+	    </parameter>
+	
+	    <parameter name = "element"    label = "Element to replace database">
+	    </parameter>
 
 
 		<!-- FingerID option files -->
         <parameter name = "FingerID_run"    label = "Run CSI:FingerID">
             <default     value="on"/>
         </parameter>
-
+2
 		<parameter   name = "DataBase_FingerID"     label = "Database for CSI:FingerID">
             <options>
                 <option value = "bio"/>
@@ -187,7 +193,21 @@
 				</input>
 			</cell>
 		</row>
-
+		<row>
+		<cell><label><content parameter ="timeout"/></label></cell>
+		<cell>
+				<input type = "text"	parameter = "timeout">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+		</cell>
+		
+		<cell><label><content parameter ="element"/></label></cell>
+		<cell>
+				<input type = "text"	parameter = "element">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+		</cell>
+        </row>
 
     </block>
 
@@ -215,6 +235,7 @@
             <cell>
                 <input  type="checkbox" parameter="spectral_annotation"/>
                 <label><content parameter = "spectral_annotation"/></label>
+                
             	<content parameter="csv"/>
                 <module id="csv" type="fileSelector">
 			        <property name="label">Spectral Annotation Files</property>
@@ -227,6 +248,7 @@
 		 			<attribute name = "size" value = "10"/>
 				</input>
 			</cell>
+			
 			
         </row>
     </block>

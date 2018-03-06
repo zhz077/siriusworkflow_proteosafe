@@ -2,24 +2,9 @@
 import sys
 import os
 import argparse
-import pandas as pd
-import math
 import subprocess
-def main():
 
-	#parse in all the parameters
-    parser = argparse.ArgumentParser(description='Running sepfile wrapper')
-    parser.add_argument('mgf', help='mgf')
-    parser.add_argument('mgfo', help='mgfo')
-    args = parser.parse_args()
-	
-    #define the paths
-    p_mgf = args.mgf
-    p_mgfo = args.mgfo
-
-        
-    # set the step to be 15 each
-    step = 15
+def split(p_mgf,step):
     lists = []
     ionlist =[] 
     feature_count = 0
@@ -44,6 +29,45 @@ def main():
             ionlist.append(line)
     lists.append(list1);
     inmgf.close()
+    return lists
+ 
+def main():
+
+	#parse in all the parameters
+    parser = argparse.ArgumentParser(description='Running sepfile wrapper')
+    parser.add_argument('mgf', help='mgf')
+    parser.add_argument('mgfo', help='mgfo')
+    args = parser.parse_args()
+	
+    #define the paths
+    p_mgf = args.mgf
+    p_mgfo = args.mgfo
+
+
+    #set the maximum of segmentation
+    num_seg = 32
+    # set the step to be 15 each if it is 
+    step = 15
+
+    # read the files to see how many features   
+    feature_count = 0
+    with open(p_mgf,'r') as inmgf:
+        content = inmgf.readlines()
+        #counter counts # of features
+        counter = 0
+        for line in content:                    
+            if len(line.split('FEATURE_ID=')) !=1:
+                old_count = feature_count
+                feature_count= int(line.split('FEATURE_ID=')[-1])
+                if old_count != feature_count:
+                    counter = counter+1
+    inmgf.close()
+    
+    if counter <= step*num_seg:
+        lists = split(p_mgf,step)
+    else:
+        lists = split(p_mgf,int(counter/num_seg)+1)
+        print(counter/num_seg)
 
     #write the file
     counter2 = 0;

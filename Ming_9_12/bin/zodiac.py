@@ -46,7 +46,7 @@ def main():
     args = parser.parse_args()
     param = args.workflow_parameters
     p_mf = args.mf
-    p_mgf = os.path.abspath(args.input_mgf_file)
+    p_mgf =args.input_mgf_file
     p_c = args.canopus_path
     p_out = p_mgf.split(p_mgf.split("/")[-2])[0]
     p_out_fingerid = p_out+"fingerid"
@@ -145,9 +145,24 @@ def main():
     for root, dirs, files in os.walk(args.siriusoutput):
         for name in files:
             if os.path.splitext(name)[-1] == ".zip":
-                cmd = "unzip %s"%(os.path.join(root, name))
+                cmd = "unzip %s -d sirius"%(os.path.join(root, name))
                 os.system(cmd)
                 filecount = filecount+1
+                
+    # rename the files
+    for root, dirs, files in os.walk('sirius'):
+        for folder in dirs:
+            if len(folder.split('_mgf')) !=1:
+                print (folder)
+                firstcounter = folder.split('_')[-1]
+                newname = '%s_mgf-00000_%s' %(firstcounter,firstcounter)
+                try:
+                    os.rename(os.path.join(root,folder),os.path.join(root,newname))
+                except:
+                    print('notright')
+                    continue
+                print('benchmarking')
+                print(folder)
 
     #step 2
     if annot and not empty_exp:
@@ -168,6 +183,7 @@ def main():
     #step3:
     if runFID:
         cmd = "%s --fingerid --fingerid-db %s --experimental-canopus=%s -o %s %s" %(p_sirius,FID_DB,p_c,p_out_fingerid,p_out_zodiac)
+        print(cmd)
     execute_script_file2.write(cmd + "\n")
 
     #execution
@@ -181,10 +197,7 @@ def main():
         fLog.write(stderror)
         fLog.write('\n')
     os.unlink(execute_script_file2.name)
-
-
-
-
+    
 
     #try to find all the ftp files and label them with feature ids
     
@@ -246,7 +259,7 @@ def main():
                     fLog.write("The fingerid workflow didnt proceed successfully\n")
     
             transFiles(p_out_zodiac,'zodiac_summary.csv',args.summary)
-            transFiles(p_out_fingerid,'summary_csi_fingerid.csv',args.summary)
+            #transFiles(p_out_fingerid,'summary_csi_fingerid.csv',args.summary)
 
             fLog.close()
 

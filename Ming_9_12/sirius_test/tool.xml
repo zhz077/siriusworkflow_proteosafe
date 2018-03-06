@@ -2,7 +2,7 @@
     <pathSet base="anaconda3/bin">
         <toolPath tool="sepfile" path="python3.5"/>
         <toolPath tool="sirius" path="python3.5"/>
-        <toolPath tool="zodiac" path="python3.5"/>
+        <toolPath tool = "zodiac" path = "python3.5"/>
         <toolPath tool="csvbuilder" path="python3.5"/>
     </pathSet>
 
