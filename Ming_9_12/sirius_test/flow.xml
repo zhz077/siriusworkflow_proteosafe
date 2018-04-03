@@ -7,47 +7,25 @@
 	<collection 	name="gnps"/>
 	<collection 	name = "cyto"/>
 	<collection 	name = "mf"/>
+`	<collection 	name="dir_zip"/>
+	<object			name = "log"/>
 	<collection		name = "fpt"/>
-`	<object	        name="sirius_zip"/>
-    <object	        name="zodiac_zip"/>
-    <object	        name="fingerid_zip"/>
-	<collection		name = "siriuslog"/>
-	<object	name = "zodiaclog"/>
-	<collection		name = "summary"/>
-    <collection     name = "splitmgf"/>
-   	<collection		name = "siriusoutput"/>
 	<action name="begin">
 		<output port="mgf"       object="mgf"/>
 		<output port="csv"       object="csv"/>
 		<output port="flowParams" object="workflowParameters"/>
 	</action>
 	
-    <action name="sepfile">
-    	<input port="mgf"       object="mgf"/>
-		<output port = "splitmgf"     collection = "splitmgf"/>
-	</action>
-	
-	<action name="sirius" multiplicity ="multiple"  type = "parallel">
-		<input  port="splitmgf"            collection="splitmgf" transformation="unfolding"/>
-		<input  port="flowParams"      object="workflowParameters"/>
-		<output port ="siriusoutput"		collection = "siriusoutput"/>
-		<output port ="siriuslog"		collection = "siriuslog"/>
-	</action>
-	
-	<action name="zodiac">
-		<input  port="mgf"            collection="mgf" />
+	<action name="sirius">
+		<input  port="mgf"             object="mgf"/>
 		<input  port="csv"            	object="csv"/>
 		<input  port="flowParams"      object="workflowParameters"/>
-		<input  port="siriusoutput"      collection="siriusoutput"/>
-		<output  port="summary"	     collection="summary"/>
-		<output port ="zodiaclog"		object = "zodiaclog"/>
+		<output  port="summary"	   collection="summary"/>
 		<output port="mf"		collection="mf"/>
+		<output port="dir_zip"	collection="dir_zip"/>
+		<output port ="log"		object = "log"/>
 		<output port = "fpt"	collection ="fpt"/>
-		<output port = "sirius_zip" object = "sirius_zip"/>
-		<output port = "zodiac_zip" object = "zodiac_zip"/>
-		<output port = "fingerid_zip" object = "fingerid_zip"/>
 	</action>
-	
 
 	<action name="csvbuilder">
 		<input port="mf"		collection="mf"/>
@@ -60,11 +38,8 @@
 		<input port="summary"		 collection="summary"/>
 		<input port = "gnps"		collection= "gnps"/>
 		<input port = "cyto"	collection = "cyto"/>
-		<input port ="sirius_zip"	object="sirius_zip"/>
-		<input port ="zodiac_zip"	object="zodiac_zip"/>
-		<input port ="fingerid_zip"	object="fingerid_zip"/>
-		<input port = "log"		collection = "log"/>
+		<input port ="dir_zip"	collection="dir_zip"/>
+		<input port = "log"		object = "log"/>
 		<input port = "fpt"		collection ="fpt"/>
 	</action>
-
 </flow>

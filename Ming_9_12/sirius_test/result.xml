@@ -1,20 +1,31 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<interface id="sirius-test" version="1.2.3">
+<interface id="speclib_add" version="1.2.3">
 	<download>
 		<source type="folder" name="summary/"/>
 		<source type="folder" name="gnps/"/>
 		<source type="folder" name="cyto/"/>
-		<source type = "file" name="sirius_zip"/>
-		<source type = "file" name = "zodiac_zip"/>
-		<source type = "file" name = "fingerid_zip"/>
+		<source type = "folder" name="dir_zip/"/>
 		<source type = "folder" name="log/"/>
 		<source type = "folder" name="fpt/"/>
 	</download>
 
-	<view id="csv_view" label="Sirius Results View">
-		<blockRef id="zodiac" type="csv_view"/>
-	</view>
 
+
+	<view id="download files" label="download_zip" group="DOWNLOADS">
+		<blockRef id="main" type="download files"/>
+	</view>
+	<block id = "download files" type = "dummydownload">
+	    <data>
+	       <source type="file" name="gnps/summary_csi_fingerid.csv"/>
+	       <parsers>
+	            <parser type = "stream" contentType= "text/xml"/>
+	        </parsers>   
+        </data>
+    </block>
+ 
+ 	<view id="csv_view" label="Sirius Results View">
+		<blockRef id="main" type="csv_view"/>
+	</view>
 	<block id="csv_view" type="table">
 		<data>
 			<source type="file" name="gnps/summary_csi_fingerid.csv"/>

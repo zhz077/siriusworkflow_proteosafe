@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<interface id="sirius-test" version="1.2.5">
-    <workflow-id>sirius-test</workflow-id>
-    <workflow-label>sirius-test</workflow-label>
+<interface id="sirius-single" version="1.2.5">
+    <workflow-id>sirius-single</workflow-id>
+    <workflow-label>sirius-single</workflow-label>
 
     <!-- Parameter declarations -->
     <parameters>
@@ -16,7 +16,8 @@
 
 		<!-- computing option files  -->
 	    <parameter name="mgf" label="Input MGF files">
-            <validator type="required"/>
+            <!--validator type="required"/-->
+            <!--fileGenerator type="upload" purpose="spectrum" target="mgf"/-->
             <fileGenerator type="upload" purpose="spectrum" target="mgf"/>
         </parameter>
 
@@ -107,8 +108,12 @@
 	    </parameter>
 
 		<parameter name="csv" label="Spectral Annotation File">
-            <fileGenerator type="upload" purpose="spectrum"  target="csv"/>
+            <fileGenerator type="upload"   purpose="spectra" target="csv"/>
     	</parameter>
+    	
+    	<!--parameter name="csv" label="Spectral Annotation File">
+            <fileGenerator type="upload" purpose="spectra"  target="csv"/>
+    	</parameter-->
 
 
 		<parameter name = "spectral_annotation"    label = "Use MS/MS spectral annotation">
