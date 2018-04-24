@@ -1,47 +1,32 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<interface id="speclib_add" version="1.2.3">
-	<download>
-		<source type="folder" name="summary/"/>
-		<source type="folder" name="gnps/"/>
-		<source type="folder" name="cyto/"/>
-		<source type = "folder" name="dir_zip/"/>
-		<source type = "folder" name="log/"/>
-		<source type = "folder" name="fpt/"/>
-	</download>
+<interface id="sirius-test" version="1.2.3">
+        <download>
+                <source type="folder" name="summary/"/>
+                <source type = "folder" name="dir_zip/"/>
+                <source type="folder" name="gnps/"/>
+                <source type="folder" name="cyto/"/>
+                <source type = "folder" name="log/"/>
+                <source type = "folder" name="fpt/"/>
+        </download>
 
+        <view id="csv_view" label="Sirius Results View">
+                <blockRef id="csv_view" type="csv_view"/>
+        </view>
 
-
-	<view id="download files" label="download_zip" group="DOWNLOADS">
-		<blockRef id="main" type="download files"/>
-	</view>
-	<block id = "download files" type = "dummydownload">
-	    <data>
-	       <source type="file" name="gnps/summary_csi_fingerid.csv"/>
-	       <parsers>
-	            <parser type = "stream" contentType= "text/xml"/>
-	        </parsers>   
-        </data>
-    </block>
- 
- 	<view id="csv_view" label="Sirius Results View">
-		<blockRef id="main" type="csv_view"/>
-	</view>
-	<block id="csv_view" type="table">
-		<data>
-			<source type="file" name="gnps/summary_csi_fingerid.csv"/>
-			<parsers>
-				 <parser type="sortedTabular"/>
-			</parsers>
-		</data>
-		<row>
-				<column type="integer" field="experimentName" label="id" width="3"/>
-				<column type="text" field="molecularFormula" label="molecularFormula" width="15"/>
-				<column type="float" field="score_1" label="Score" precision="3"/>
-				<column type="text" field="name_1" label="name" width="15"/>
-				<column type="text" field="Estimate identification" label="Estimate identification" width="15"/>
-			
-		</row>
-	</block>
+        <block id="csv_view" type="table">
+                <data>
+                        <source type="file" name="gnps/summary_csi_fingerid.csv"/>
+                        <parsers>
+                                 <parser type="sortedTabular"/>
+                        </parsers>
+                </data>
+                <row>
+                                <column type="integer" field="experimentName" label="id" width="4"/>
+                                <column type="text" field="molecularFormula" label="molecularFormula" width="15"/>
+                                <column type="float" field="SiriusScore" label="Score" precision="3"/>
+                                <column type="text" field="Estimate identification" label="Estimate identification" precision="10"/>
+       
+                </row>
+        </block>
 </interface>
-
 

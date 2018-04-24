@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1" ?>
-<interface id="sirius-single" version="1.2.5">
-    <workflow-id>sirius-single</workflow-id>
-    <workflow-label>sirius-single</workflow-label>
+<interface id="sirius-test" version="1.2.5">
+    <workflow-id>sirius-test</workflow-id>
+    <workflow-label>sirius-test</workflow-label>
 
     <!-- Parameter declarations -->
     <parameters>
@@ -42,6 +42,12 @@
                 <option value ="kegg"/>
                 <option value ="knapsack"/>
                 <option value ="biocyc"/>
+                <option value ="chebi"/>
+                <option value ="unpd"/>
+                <option value ="zinc"/>
+                <option value ="gnps"/>
+                <option value ="maconda"/>
+                <option value ="hsbd"/>
 		        <option value ="all"/>
             </options>
         </parameter>
@@ -86,10 +92,18 @@
 
 
 		<!-- FingerID option files -->
-        <parameter name = "FingerID_run"    label = "Run CSI:FingerID">
+        <!--parameter name = "FingerID_run"    label = "Run CSI:FingerID">
             <default     value="on"/>
+        </parameter-->
+        
+        <!--parameter name = "usesirius"    label = "Use Sirius for CSI:FingerID">
+            <default     value="off"/>
+        </parameter-->
+                
+        <parameter name = "runzodiac"    label = "Run Zodiac">
+            <default     value="off"/>
         </parameter>
-2
+
 		<parameter   name = "DataBase_FingerID"     label = "Database for CSI:FingerID">
             <options>
                 <option value = "bio"/>
@@ -98,13 +112,19 @@
                 <option value ="kegg"/>
                 <option value ="knapsack"/>
                 <option value ="biocyc"/>
+                <option value ="chebi"/>
+                <option value ="unpd"/>
+                <option value ="zinc"/>
+                <option value ="gnps"/>
+                <option value ="maconda"/>
+                <option value ="hsbd"/>
 		        <option value ="all"/>
             </options>
         </parameter>
 	
 	    <parameter name = "processor"	label = "Number of processors used for computation">
-		    <default	value = "16"/>
-		    <validator type="integer" minimum="1" maximum="16"/>
+		    <default	value = "32"/>
+		    <validator type="integer" minimum="1" maximum="32"/>
 	    </parameter>
 
 		<parameter name="csv" label="Spectral Annotation File">
@@ -116,7 +136,7 @@
     	</parameter-->
 
 
-		<parameter name = "spectral_annotation"    label = "Use MS/MS spectral annotation">
+		<parameter name = "spectral_annotation"    label = "Use MS/MS annotation">
             <default     value="off"/>
         </parameter>
 
@@ -125,13 +145,11 @@
 		    <validator type="float" minimum="0" maximum="1"/>
 	    </parameter>
 
-
-
 	</parameters>
 
     <!-- Input form layout -->
-	<!-- computing -->
-    <block label="Computing Options">
+	<!-- sirius options-->
+    <block label="Sirius Computing Options">
        	<row>
 			<cell><label><content parameter="mgf"/></label></cell>    
             <cell>
@@ -139,14 +157,6 @@
                     <property name="label">Input mgf File</property>
                 </module>
             </cell>
-
-			
-			<cell><label><content parameter = "ppm"/></label></cell>
-			<cell>
-				<input type = "text"	parameter = "ppm">
-		 			<attribute name = "size" value = "10"/>
-				</input>
-			</cell>
 		</row>
 
 		<row>
@@ -166,10 +176,10 @@
 				</input>
 			</cell>
 
-
-            <cell><label><content parameter = "minLocalConnections"/></label></cell>
+			
+			<cell><label><content parameter = "ppm"/></label></cell>
 			<cell>
-				<input type = "text"	parameter = "minLocalConnections">
+				<input type = "text"	parameter = "ppm">
 		 			<attribute name = "size" value = "10"/>
 				</input>
 			</cell>
@@ -191,14 +201,17 @@
 		 			<attribute name = "size" value = "10"/>
 				</input>
 			</cell>
-			<cell><label><content parameter = "filter"/></label></cell>
+         
+			<cell><label><content parameter ="processor"/></label></cell>
 			<cell>
-				<input type = "text"	parameter = "filter">
+				<input type = "text"	parameter = "processor">
 		 			<attribute name = "size" value = "10"/>
 				</input>
 			</cell>
+
 		</row>
-		<row>
+	
+    	<row>
 		<cell><label><content parameter ="timeout"/></label></cell>
 		<cell>
 				<input type = "text"	parameter = "timeout">
@@ -216,27 +229,22 @@
 
     </block>
 
-
-
-	<!--Finger ID options -->
-
-	<block label="CSI:FingerID Options">
+	<!--zodiac options -->
+	<block label="Zodiac Computing Options (Experimental)">
         <row>
             <cell>
-                <input  type="checkbox" parameter="FingerID_run"/>
-                <label><content parameter = "FingerID_run"/></label>
-            </cell>
+                <input  type="checkbox" parameter="runzodiac"/>
+                <label><content parameter = "runzodiac"/></label>
+            </cell> 
 
-            <cell>
-                <label><content parameter="DataBase_FingerID"/></label>
-            </cell>
-
+            <cell><label><content parameter = "minLocalConnections"/></label></cell>
 			<cell>
-                <input type = "select"  parameter="DataBase_FingerID"/>
-            </cell>
+				<input type = "text"	parameter = "minLocalConnections">
+		 			<attribute name = "size" value = "10"/>
+				</input>
+			</cell>
         </row>
-
-	    <row>
+        <row>
             <cell>
                 <input  type="checkbox" parameter="spectral_annotation"/>
                 <label><content parameter = "spectral_annotation"/></label>
@@ -246,15 +254,33 @@
 			        <property name="label">Spectral Annotation Files</property>
 		        </module>
             </cell>
-            
-			<cell><label><content parameter ="processor"/></label></cell>
+
+        	<cell><label><content parameter = "filter"/></label></cell>
 			<cell>
-				<input type = "text"	parameter = "processor">
+				<input type = "text"	parameter = "filter">
 		 			<attribute name = "size" value = "10"/>
 				</input>
 			</cell>
+        </row>
+	</block>
+
+	<!--Finger ID options -->
+
+	<block label="CSI:FingerID Options">
+
+        <row>
+            <!--cell>
+                <input  type="checkbox" parameter="FingerID_run"/>
+                <label><content parameter = "FingerID_run"/></label>
+            </cell-->
 			
-			
+			<cell>
+                <label><content parameter="DataBase_FingerID"/></label>
+            </cell>
+
+			<cell>
+                <input type = "select"  parameter="DataBase_FingerID"/>
+            </cell>			               
         </row>
     </block>
 </interface>
