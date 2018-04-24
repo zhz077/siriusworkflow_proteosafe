@@ -12,11 +12,11 @@ def searchmf(foldername,mf):
 	smileS = ''
 	sname=''
 	counter=''
-	print(mf)
+
 	
 	for root, dirs, files in os.walk(foldername):
 		for name in files:
-			if str(mf) in name:
+			if name.split("_")[1].split(".")[0] == mf:
 				csv_path =os.path.join(root, name)
 				csvFile = open(csv_path,"r")
 				reader2 = csv.reader(csvFile, delimiter='\t')
@@ -120,7 +120,7 @@ def main():
 	#edit cyto folder first
 
 	#removing confusing benchmark
-	skip_fid= True
+	'''skip_fid= True
 	for root,dirs,files in os.walk(p_sum):
 		for filename in files:
 			if filename == 'summary_csi_fingerid.csv':
@@ -170,7 +170,7 @@ def main():
 		fingerid = sepCol(fingerid,'smiles')
 		fingerid = sepCol(fingerid,'score')
 		fingerid = sepCol(fingerid,'name')
-		fingerid.to_csv(p_gnps+'/summary_csi_fingerid.csv',sep='\t',index=False)
+		fingerid.to_csv(p_gnps+'/summary_csi_fingerid.csv',sep='\t',index=False)'''
 
 	
 
