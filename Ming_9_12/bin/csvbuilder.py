@@ -12,11 +12,11 @@ def searchmf(foldername,mf):
 	smileS = ''
 	sname=''
 	counter=''
-
+	print(mf)
 	
 	for root, dirs, files in os.walk(foldername):
 		for name in files:
-			if name.split("_")[1].split(".")[0] == mf:
+			if str(mf) in name:
 				csv_path =os.path.join(root, name)
 				csvFile = open(csv_path,"r")
 				reader2 = csv.reader(csvFile, delimiter='\t')

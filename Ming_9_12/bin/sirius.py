@@ -5,16 +5,6 @@ import argparse
 import tempfile
 import ming_proteosafe_library
 import subprocess
-#import xml.etree.ElementTree as ET
-
-def transFiles(infolder,extension,outfolder):
-    f_name=extension
-    for f in os.listdir(infolder):
-        if f.split("/")[-1] == f_name:
-            filepath = infolder+"/"+f
-            sendpath = outfolder+"/"+f_name
-            cmd = "cp %s %s" %(filepath,sendpath)
-            os.system(cmd)
 
 
 def main():
@@ -30,7 +20,7 @@ def main():
     parser.add_argument('dir_zip', help='dir_zip')
     parser.add_argument('log', help='log')
     parser.add_argument('sirius_jar', help='sirius_jar')
-    #parser.add_argument('gurobi_path', help='gurobi_path')
+    parser.add_argument('gurobi_path', help='gurobi_path')
     parser.add_argument('canopus_path', help='canopus_path')
 
 
@@ -64,15 +54,15 @@ def main():
     #start the log file
     fLog = open(log,"w")
 
-    
-
-
     #Match the parameters
     params_obj = ming_proteosafe_library.parse_xml_file(open(param))
-    runFID = False
+    #runFID = False
     i_mode = "ion [M+H]+"
     adduct = "auto-charge"
     annot = True
+    #runZodiac = True
+    #only use "useSirius" to indicate which output to use for fid
+    useSirius = True
 
 
     if params_obj["adduct"][0] == "use MS1 information":
@@ -83,11 +73,23 @@ def main():
             annot = True
     except:
             annot = False
-    try:
+    '''try:
         if params_obj["FingerID_run"][0] == "on":
              runFID = True
     except:
-            runFID = False
+            runFID = False'''
+            
+    try:
+        if params_obj["runzodiac"][0] == "on":
+            useSirius = False
+    except:
+            useSirius = True
+            
+    '''try:
+        if params_obj["usesirius"][0] == "on":
+             useSirius = True
+    except:
+            useSirius = False'''
 
     if params_obj["Ionisation_mode"][0] == "Negative":
         i_mode = "ion [M+H]-"
@@ -135,12 +137,10 @@ def main():
     except:
         timeout = -1
 
-
     #writing batch file
     execute_script_file = tempfile.NamedTemporaryFile(delete=False, mode='w')
-    #cmd = "export GUROBI_HOME=%s" % (args.gurobi_path)
-    #execute_script_file.write(cmd + "\n")
-
+    cmd = "export GUROBI_HOME=%s" % (args.gurobi_path)
+    execute_script_file.write(cmd + "\n")
 
     # step1
     cmd = "%s --quiet --trust-ion-prediction --initial-compound-buffer 0 --profile %s --candidates %s --processors %s --maxmz %s --ppm-max %s --%s "%(p_sirius, profile,tree_number,processor,precursor,ppm,i_mode)
@@ -151,21 +151,25 @@ def main():
     else:
         cmd = cmd +"--database %s "%(DB)
     
-    cmd = cmd+"--workspace %s %s" %(p_out_sirius, p_mgf)
-    execute_script_file.write(cmd + "\n")
-
-    #step 2
-    if annot and not empty_exp:
-        cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,'sirius',p_csv,filter,connections,p_out_zodiac,processor,p_mgf)
+    if useSirius:
+        cmd = cmd + "--fingerid --fingerid-db %s --experimental-canopus=%s -o %s %s" %(FID_DB,p_c,p_out_fingerid,p_mgf)
         execute_script_file.write(cmd + "\n")
+
     else:
-        cmd = "%s --zodiac --sirius %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,'sirius',filter,connections,p_out_zodiac,processor,p_mgf)
+        cmd = cmd+"--output %s %s" %(p_out_sirius, p_mgf)
         execute_script_file.write(cmd + "\n")
 
-    #step3:
-    if runFID:
+        #step 2
+        if annot and not empty_exp:
+            cmd = "%s --zodiac  --sirius %s --spectral-hits %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius,p_csv,filter,connections,p_out_zodiac,processor,p_mgf)
+            execute_script_file.write(cmd + "\n")
+        else:
+            cmd = "%s --zodiac --sirius %s --thresholdfilter %s --minLocalConnections %s --output %s --processors %s --spectra %s" %(p_sirius,p_out_sirius,filter,connections,p_out_zodiac,processor,p_mgf)
+            execute_script_file.write(cmd + "\n")
+
+        #step3:
         cmd = "%s --fingerid --fingerid-db %s --experimental-canopus=%s -o %s %s" %(p_sirius,FID_DB,p_c,p_out_fingerid,p_out_zodiac)
-    execute_script_file.write(cmd + "\n")
+        execute_script_file.write(cmd + "\n")
 
     #execution
     execute_script_file.close()
@@ -202,14 +206,13 @@ def main():
         runZodiac = True
     except subprocess.CalledProcessError as e:
         fLog.write("step 2 (zodiac computation) did not proceed successfully and there won't be zodiac summary file. \n")
-    if runFID:
-        cmd ="zip -r %s fingerid"%(os.path.join(dir_zip,"fingerid.zip"))
-        try: 
-            subprocess.check_output(["zip","-r",os.path.join(dir_zip,"fingerid.zip"),"fingerid"])
-            os.system(cmd)
-            run_FID = True
-        except subprocess.CalledProcessError as e:
-            fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be finger id summary file. \n")
+    cmd ="zip -r %s fingerid"%(os.path.join(dir_zip,"fingerid.zip"))
+    try: 
+        subprocess.check_output(["zip","-r",os.path.join(dir_zip,"fingerid.zip"),"fingerid"])
+        os.system(cmd)
+        run_FID = True
+    except subprocess.CalledProcessError as e:
+        fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be finger id summary file. \n")
 		
 	
 
@@ -222,11 +225,13 @@ def main():
             for root, dirs, files in os.walk(p_out_fingerid):
                 for name in files:
             	    if os.path.splitext(name)[-1] == extension:
+            	        #canopus and fingerprints
             	        filepath = os.path.join(root, name)
             	        sendpathset = str(filepath).split("/")
             	        sendpath = sendpathset[-3].split("_")[-1]
+            	        foldername = str(filepath).split("/")[-2]
             	        fullname = sendpathset[-1]
-            	        sendpath = p_fpt+"/"+sendpath+"_"+fullname
+            	        sendpath = p_fpt+"/"+sendpath+"_"+foldername+"_"+fullname
             	        cmd = "cp %s %s" %(filepath,sendpath)
             	        os.system(cmd)
             	    if os.path.splitext(name)[-1] == ex_mf:
@@ -242,9 +247,19 @@ def main():
                 fLog.write("step 3 (CSI:fingerid search) did not proceed successfully and there won't be fpt files. \n")
 
     if runZodiac:
-        transFiles(p_out_zodiac,'zodiac_summary.csv',summary)
+        cmd = "cp %s %s" %(os.path.join(p_out_zodiac,'zodiac_summary.csv'),summary)
+        try: 
+            subprocess.check_output(["cp",os.path.join(p_out_zodiac,'zodiac_summary.csv'),summary])
+            os.system(cmd)
+        except subprocess.CalledProcessError as e:
+            fLog.write("step 2 (zodiac) did not proceed successfully and there won't be fpt files. \n")
     if run_FID:
-        transFiles(p_out_fingerid,'summary_csi_fingerid.csv',summary)
+        cmd = "cp %s %s" %(os.path.join(p_out_fingerid,'summary_csi_fingerid.csv'),summary)
+        try: 
+            subprocess.check_output(["cp",os.path.join(p_out_fingerid,'summary_csi_fingerid.csv'),summary])
+            os.system(cmd)
+        except subprocess.CalledProcessError as e:
+            fLog.write("step 3 (fingerid) did not proceed successfully and there won't be fpt files. \n")
     fLog.close()
 
 
