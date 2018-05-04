@@ -143,7 +143,7 @@ def main():
     execute_script_file.write(cmd + "\n")
 
     # step1
-    cmd = "%s --quiet --trust-ion-prediction --initial-compound-buffer 0 --profile %s --candidates %s --processors %s --maxmz %s --ppm-max %s --%s "%(p_sirius, profile,tree_number,processor,precursor,ppm,i_mode)
+    cmd = "%s --auto-charge --quiet --trust-ion-prediction --initial-compound-buffer 0 --profile %s --candidates %s --processors %s --maxmz %s --ppm-max %s --%s "%(p_sirius, profile,tree_number,processor,precursor,ppm,i_mode)
     if int(timeout) >0:
         cmd =cmd+"--compound-timeout %s " %(timeout)
     if element != 'None':
