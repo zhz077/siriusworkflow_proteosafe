@@ -66,8 +66,12 @@
 
 		<parameter   name = "Ionisation_mode"     label = "Ionisation Mode">
             <options>
-                <option value = "Positive"/>
-                <option value ="Negative"/>
+                <option value = "[M+H]+"/>
+                <option value ="[M+Na]+"/>
+                <option value ="[M+K]+"/>
+                <option value ="[M+NH4]+"/>
+                <option value ="[M+Cl]-"/>
+                <option value ="[M+H]-"/>
             </options>
         </parameter>
 
