@@ -64,16 +64,7 @@
 			<validator type="float" minimum="0" maximum="10000.0"/>
 		</parameter>
 
-		<parameter   name = "Ionisation_mode"     label = "Ionisation Mode">
-            <options>
-                <option value = "[M+H]+"/>
-                <option value ="[M+Na]+"/>
-                <option value ="[M+K]+"/>
-                <option value ="[M+NH4]+"/>
-                <option value ="[M+Cl]-"/>
-                <option value ="[M+H]-"/>
-            </options>
-        </parameter>
+		<parameter   name = "Ionisation_mode"     label = "Ionisation Mode"/>
 
 		<parameter name = "adduct"    label = "Adduct Selection">
             <options>
@@ -91,8 +82,7 @@
 		    <validator type="integer" minimum="1" maximum="9000"/>
 	    </parameter>
 	
-	    <parameter name = "element"    label = "Element to replace database">
-	    </parameter>
+	    <parameter name = "element"    label = "Element to replace database"/>
 
 
 		<!-- FingerID option files -->
@@ -168,7 +158,11 @@
             <cell><input type = "select"         parameter="DataBase"/></cell>
 
             <cell> <label><content parameter="Ionisation_mode"/></label> </cell>
-            <cell><input type = "select"         parameter="Ionisation_mode"/></cell>
+            <cell>
+				<input type = "text"	parameter = "Ionisation_mode">
+		 			<attribute name = "size" value = "20"/>
+				</input>
+		    </cell>
         </row>
 
 		<row>

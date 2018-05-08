@@ -57,15 +57,15 @@ def main():
     #Match the parameters
     params_obj = ming_proteosafe_library.parse_xml_file(open(param))
     #runFID = False
-    adduct = "auto-charge"
+    adduct = " "
     annot = True
     #runZodiac = True
     #only use "useSirius" to indicate which output to use for fid
     useSirius = True
-    i_mode = "--auto-charge --trust-ion-prediction" 
+    i_mode = "--auto-charge" 
 
     if params_obj["adduct"][0] == "use MS1 information":
-        adduct = "guession [M+H]+,[M+Na]+,[M+K]+,[M+NH4]+"
+        adduct = "--trust-ion-prediction"
 
     try:
         if params_obj["spectral_annotation"][0] == "on":
@@ -90,9 +90,8 @@ def main():
     except:
             useSirius = False'''
 
-    if params_obj["Ionisation_mode"][0] != "default":
+    if params_obj["Ionisation_mode"][0] != "":
         i_mode = "--ion "+ params_obj["Ionisation_mode"][0] 
-
 
     profile = params_obj["Profile_param"][0]
     DB = params_obj["DataBase"][0]
@@ -143,7 +142,7 @@ def main():
     cmd = 'export SIRIUS_OPTS="-Xmx15G"'
     execute_script_file.write(cmd + "\n")
     # step1
-    cmd = "%s --quiet --initial-compound-buffer 0 --profile %s --candidates %s --processors %s --maxmz %s --ppm-max %s %s "%(p_sirius, profile,tree_number,processor,precursor,ppm,i_mode)
+    cmd = "%s --quiet --initial-compound-buffer 0 --profile %s --candidates %s --processors %s --maxmz %s --ppm-max %s %s %s "%(p_sirius,profile,tree_number,processor,precursor,ppm,adduct,i_mode)
     if int(timeout) >0:
         cmd =cmd+"--compound-timeout %s " %(timeout)
     if element != 'None':
@@ -182,9 +181,6 @@ def main():
         fLog.write("Sirius process has errors and/or warnings. Please see the following message.\n")
         fLog.write(stderror)
         fLog.write('\n')
-
-
-
 
 
     #zip the output to one dir_zip
